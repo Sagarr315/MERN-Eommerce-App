@@ -1,0 +1,184 @@
+/* Navbar Background */
+.navbar {
+  background-color: #201D24;
+  transition: background-color 0.4s ease;
+  padding: 0.8rem 1rem;
+}
+
+/* Navbar Brand */
+.navbar .navbar-brand {
+  color: #ffffff ;
+  font-weight: bold;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.navbar .navbar-brand:hover {
+  color: #fbbf24;
+  text-decoration: none;
+}
+
+/* Nav Links */
+.navbar .nav-link {
+  color: #d1d5db ;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #ffffff ;
+  transform: translateY(-2px);
+}
+
+/* Active Link */
+.navbar .nav-link.active {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Dropdown Menu */
+.navbar .dropdown-menu {
+  background-color: #2a2532;
+  border: none;
+  min-width: 200px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.navbar .dropdown-menu .dropdown-item {
+  color: #e2e8f0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar .dropdown-menu .dropdown-item:hover {
+  background-color: #4a5568;
+  color: #fbbf24 ;
+}
+
+/* Cart Button */
+.navbar .btn-cart {
+  color: #e2e8f0;
+  border: 1px solid #4a5568;
+  background-color: transparent;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.navbar .btn-cart:hover {
+  background-color: #fbbf24;
+  color: #1F2937;
+  border-color: #fbbf24;
+}
+
+/* Badge */
+.navbar .badge {
+  font-size: 0.7rem;
+  font-weight: bold;
+  transform: scale(1);
+  transition: transform 0.3s ease;
+}
+
+.navbar .btn-cart:hover .badge {
+  transform: scale(1.2);
+}
+
+/* Mobile Toggle Button */
+.navbar .navbar-toggler {
+  border-color: #4a5568;
+}
+
+.navbar .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(226,232,240, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/ %3E%3C/svg%3E");
+}
+
+/* Smooth transition for navbar collapse (mobile) */
+.navbar-collapse {
+  transition: max-height 0.5s ease, opacity 0.5s ease;
+}
+
+/* Optional: hover effect for dropdown parent */
+.navbar .dropdown:hover > .dropdown-menu {
+  display: block;
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+/* Scroll shadow effect */
+.navbar.shadow-sm {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Container for Cart + Auth Buttons */
+.navbar .navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* SIGN IN BUTTON STYLES */
+.navbar .btn-outline-primary {
+  color: #fbbf24 ;
+  border-color: #fbbf24 ;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.navbar .btn-outline-primary:hover {
+  background-color: #fbbf24 ;
+  color: #1F2937 ;
+  border-color: #fbbf24 ;
+}
+
+/* SIGN UP BUTTON STYLES */
+.navbar .btn-primary {
+  background-color: #fbbf24 ;
+  border-color: #fbbf24;
+  color: #1F2937 ;
+  transition: all 0.3s ease;
+}
+
+.navbar .btn-primary:hover {
+  background-color: #f59e0b ;
+  border-color: #f59e0b;
+  color: #1F2937 ;
+  transform: translateY(-2px);
+}
+
+/* Ensure proper spacing for all buttons in the navbar */
+.navbar .d-flex.gap-3 .btn {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+/* Custom Sign In Button */
+.navbar .btn-signin {
+  color: #fbbf24;
+  border: 1px solid #fbbf24;
+  background-color: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.navbar .btn-signin:hover {
+  background-color: #fbbf24;
+  color: #1F2937;
+  border-color: #fbbf24;
+}
+
+/* Custom Sign Up Button */
+.navbar .btn-signup {
+  background-color: #fbbf24;
+  border: 1px solid #fbbf24;
+  color: #1F2937;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.navbar .btn-signup:hover {
+  background-color: #f59e0b;
+  border-color: #f59e0b;
+  color: #1F2937;
+  transform: translateY(-2px);
+}
