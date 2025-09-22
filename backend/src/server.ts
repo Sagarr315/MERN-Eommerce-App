@@ -5,6 +5,7 @@ import connectDB from "./config/db";
 connectDB();
 import authRoutes from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
+import cartRoutes from "./routes/cartRoutes";
 
 
 const app = express();
@@ -15,6 +16,8 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+
 // Test route
 app.get("/", (req, res) => {
   res.send("Hello Server ");
