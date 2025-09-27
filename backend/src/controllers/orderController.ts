@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import Order from "../models/Order";
 import Product from "../models/Product";
+import Notification from "../models/notification"; 
 
 const buildOrderProducts = async (items: { productId: string; quantity: number }[]) => {
   const result: { productId: mongoose.Types.ObjectId; quantity: number; price: number }[] = [];
@@ -50,6 +51,22 @@ export const createOrder = async (req: Request, res: Response) => {
       products: orderProducts,
       totalAmount,
       status: "pending",
+    });
+
+       // reduce stock for each ordered product
+    for (const item of orderProducts) {
+      await Product.findByIdAndUpdate(
+        item.productId,
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+    }
+
+    //  create notification for admin
+    await Notification.create({
+      message: `New order placed by user ${user.id}`,
+      type: "order",
+      userId: user.id,
     });
 
     const populated = await Order.findById(order._id).populate("products.productId");
