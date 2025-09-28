@@ -7,6 +7,7 @@ import {
   deleteProduct,
 } from "../controllers/productController";
 import { protect, adminOnly } from "../middleware/authMiddleware";
+import { upload } from "../config/multer";
 
 const router = express.Router();
 
@@ -15,7 +16,8 @@ router.get("/", getProducts);
 router.get("/:id", getProductById);
 
 // Admin-only routes
-router.post("/", protect, adminOnly, createProduct);
+router.post("/", protect, adminOnly, upload.single("image"), createProduct);
+
 router.put("/:id", protect, adminOnly, updateProduct);
 router.delete("/:id", protect, adminOnly, deleteProduct);
 

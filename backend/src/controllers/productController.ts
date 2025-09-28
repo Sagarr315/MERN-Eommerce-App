@@ -1,23 +1,50 @@
+import cloudinary from "../config/cloudinary";
 import { Request, Response } from "express";
 import Product from "../models/Product";
 
-//   Create new product (Admin only)
+// Create new product (Admin only)
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { title, description, price, images, stock, category } = req.body;
+    const { title, description, price, stock, category } = req.body;
 
+    // Validate required fields
+    if (!title || !price || !stock) {
+      return res.status(400).json({ message: "Title, price, stock required" });
+    }
+
+    let imageUrls: string[] = [];
+
+    if (req.file) {
+      try {
+        const fileBase64 = `data:${
+          req.file.mimetype
+        };base64,${req.file.buffer.toString("base64")}`;
+        const uploaded = await cloudinary.uploader.upload(fileBase64, {
+          folder: "ecommerce_products",
+        });
+        imageUrls.push(uploaded.secure_url);
+      } catch (err: any) {
+        console.error("Cloudinary upload error:", err);
+        return res
+          .status(500)
+          .json({ message: "Cloudinary upload failed", error: err.message });
+      }
+    }
+
+    // Create product in database
     const product = await Product.create({
       title,
       description,
       price,
-      images,
       stock,
       category,
+      images: imageUrls, // array of image URLs
     });
 
     res.status(201).json({ message: "Product created", product });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+  } catch (error: any) {
+    console.error("Create product error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 

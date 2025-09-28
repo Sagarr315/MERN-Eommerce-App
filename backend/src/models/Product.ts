@@ -4,7 +4,7 @@ export interface IProduct extends Document {
   title: string;
   description: string;
   price: number;
-  images: string[];
+  images ?: string[];
   stock: number;
   category: string;
   createdAt: Date;
