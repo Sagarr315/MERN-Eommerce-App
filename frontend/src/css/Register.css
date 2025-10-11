@@ -1,0 +1,59 @@
+.register-section {
+  background-color: #2A252E; /* slightly lighter fallback background */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  background-color: #201D24; /* main card background */
+  color: #FFFFFF;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Google button hover */
+.btn-outline-dark {
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+}
+
+.btn-outline-dark:hover {
+  background-color: #333;
+  color: #FBBF24; /* brand accent on hover */
+  border-color: #FBBF24;
+  transition: 0.3s ease-in-out;
+}
+
+/* Form buttons */
+.btn-primary {
+  background-color: #FBBF24;
+  border-color: #FBBF24;
+  color: #201D24;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #e0ac1f;
+  border-color: #e0ac1f;
+  opacity: 0.95;
+}
+
+/* Links */
+a.text-primary {
+  color: #FBBF24;
+}
+
+a.text-primary:hover {
+  text-decoration: underline;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 2rem 1.5rem;
+  }
+  .register-section {
+    padding: 2rem 0;
+  }
+}

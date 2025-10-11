@@ -1,184 +1,89 @@
-/* Navbar Background */
-.navbar {
-  background-color: #201D24;
-  transition: background-color 0.4s ease;
-  padding: 0.8rem 1rem;
+@media (min-width: 575px) and (max-width: 600px) {
+  /* Target the center categories button container */
+  .d-none.d-sm-flex.d-lg-none {
+    gap: 0.5rem !important; /* adjust spacing if needed */
+    justify-content: center; /* optional: center it horizontally */
+  }
+
+  .d-none.d-sm-flex.d-lg-none .btn {
+    padding: 0.35rem 0.8rem !important; /* adjust button padding */
+    font-size: 0.85rem !important;       /* adjust button text size */
+  }
 }
 
-/* Navbar Brand */
-.navbar .navbar-brand {
-  color: #ffffff ;
-  font-weight: bold;
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
-}
-
-.navbar .navbar-brand:hover {
-  color: #fbbf24;
-  text-decoration: none;
-}
-
-/* Nav Links */
-.navbar .nav-link {
-  color: #d1d5db ;
-  font-weight: 500;
-  margin-right: 0.5rem;
-  transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.navbar .nav-link:hover {
-  color: #ffffff ;
-  transform: translateY(-2px);
-}
-
-/* Active Link */
-.navbar .nav-link.active {
-  color: #fbbf24;
-  font-weight: 600;
-}
-
-/* Dropdown Menu */
-.navbar .dropdown-menu {
-  background-color: #2a2532;
-  border: none;
-  min-width: 200px;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.navbar .dropdown-menu .dropdown-item {
-  color: #e2e8f0;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.navbar .dropdown-menu .dropdown-item:hover {
-  background-color: #4a5568;
-  color: #fbbf24 ;
-}
-
-/* Cart Button */
-.navbar .btn-cart {
-  color: #e2e8f0;
-  border: 1px solid #4a5568;
-  background-color: transparent;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
+/* Default button size (desktop/tablet) */
+.auth-buttons a.btn {
+  padding: 0.5rem 1.5rem; /* desktop padding */
+  font-size: 1rem;        /* desktop font size */
   transition: all 0.3s ease;
 }
 
-.navbar .btn-cart:hover {
-  background-color: #fbbf24;
-  color: #1F2937;
-  border-color: #fbbf24;
-}
-
-/* Badge */
-.navbar .badge {
-  font-size: 0.7rem;
-  font-weight: bold;
-  transform: scale(1);
-  transition: transform 0.3s ease;
-}
-
-.navbar .btn-cart:hover .badge {
-  transform: scale(1.2);
-}
-
-/* Mobile Toggle Button */
-.navbar .navbar-toggler {
-  border-color: #4a5568;
-}
-
-.navbar .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(226,232,240, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/ %3E%3C/svg%3E");
-}
-
-/* Smooth transition for navbar collapse (mobile) */
-.navbar-collapse {
-  transition: max-height 0.5s ease, opacity 0.5s ease;
-}
-
-/* Optional: hover effect for dropdown parent */
-.navbar .dropdown:hover > .dropdown-menu {
-  display: block;
-  opacity: 1;
-  transform: translateY(0px);
-}
-
-/* Scroll shadow effect */
-.navbar.shadow-sm {
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-/* Container for Cart + Auth Buttons */
-.navbar .navbar-actions {
+/* Default gap between buttons */
+.auth-buttons {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1rem; /* matches Bootstrap gap-3 */
 }
 
-/* SIGN IN BUTTON STYLES */
-.navbar .btn-outline-primary {
-  color: #fbbf24 ;
-  border-color: #fbbf24 ;
-  background-color: transparent;
+/* Responsive: below 430px */
+@media (max-width: 430px) {
+  .auth-buttons a.btn {
+    padding: 0.3rem 0.8rem !important; /* smaller padding */
+    font-size: 0.85rem !important;     /* smaller font */
+  }
+
+  .auth-buttons {
+    gap: 0.5rem !important; /* smaller spacing between buttons */
+  }
+}
+
+/* Extra small screens: below 355px */
+@media (max-width: 355px) {
+  .auth-buttons a.btn {
+    padding: 0.25rem 0.6rem !important; /* even smaller padding */
+    font-size: 0.75rem !important;      /* even smaller font */
+  }
+
+  .auth-buttons {
+    gap: 0.25rem !important; /* minimal spacing */
+  }
+}
+
+/* ----------------------------
+   Auth Icons (Search / Cart)
+----------------------------- */
+
+/* Default icon size */
+.auth-icons .fs-5 {
+  font-size: 1.25rem; /* default size */
   transition: all 0.3s ease;
 }
 
-.navbar .btn-outline-primary:hover {
-  background-color: #fbbf24 ;
-  color: #1F2937 ;
-  border-color: #fbbf24 ;
+/* Default gap between icons */
+.auth-icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* default spacing similar to gap-3 */
 }
 
-/* SIGN UP BUTTON STYLES */
-.navbar .btn-primary {
-  background-color: #fbbf24 ;
-  border-color: #fbbf24;
-  color: #1F2937 ;
-  transition: all 0.3s ease;
+/* Responsive: below 430px */
+@media (max-width: 430px) {
+  .auth-icons .fs-5 {
+    font-size: 1.1rem !important; /* slightly smaller icons */
+  }
+
+  .auth-icons {
+    gap: 0.5rem !important; /* smaller spacing */
+  }
 }
 
-.navbar .btn-primary:hover {
-  background-color: #f59e0b ;
-  border-color: #f59e0b;
-  color: #1F2937 ;
-  transform: translateY(-2px);
-}
+/* Extra small screens: below 355px */
+@media (max-width: 355px) {
+  .auth-icons .fs-5 {
+    font-size: 0.95rem !important; /* even smaller icons */
+  }
 
-/* Ensure proper spacing for all buttons in the navbar */
-.navbar .d-flex.gap-3 .btn {
-  padding: 0.5rem 1rem;
-  font-weight: 500;
-}
-/* Custom Sign In Button */
-.navbar .btn-signin {
-  color: #fbbf24;
-  border: 1px solid #fbbf24;
-  background-color: transparent;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.navbar .btn-signin:hover {
-  background-color: #fbbf24;
-  color: #1F2937;
-  border-color: #fbbf24;
-}
-
-/* Custom Sign Up Button */
-.navbar .btn-signup {
-  background-color: #fbbf24;
-  border: 1px solid #fbbf24;
-  color: #1F2937;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.navbar .btn-signup:hover {
-  background-color: #f59e0b;
-  border-color: #f59e0b;
-  color: #1F2937;
-  transform: translateY(-2px);
+  .auth-icons {
+    gap: 0.25rem !important; /* minimal spacing */
+  }
 }

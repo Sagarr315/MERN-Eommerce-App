@@ -1,0 +1,9 @@
+nav.navbar.fixed-top ~ * {
+  padding-top: 60px;
+}
+
+@media (max-width: 576px) {
+  nav.navbar.fixed-top ~ * {
+    padding-top: 100px;
+  }
+}

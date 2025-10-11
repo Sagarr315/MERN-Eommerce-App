@@ -1,0 +1,55 @@
+/* Search Overlay */
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(240, 240, 240, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  padding-top: 100px;
+  z-index: 2000;
+  overflow-y: auto;
+}
+
+.search-box {
+  width: 90%;
+  max-width: 800px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+/* Default logo (desktop and tablet) */
+.responsive-logo .logo-img {
+  height: 40px;
+  transform: rotate(25deg);
+  display: block;
+  transition: all 0.3s ease-in-out;
+}
+
+.logo-text {
+  font-size: 34px;
+  font-family: "Forte", cursive;
+  color: black;
+  margin-left: -6px;
+  transform: translateY(-2px);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Responsive fix: only when BELOW 420px */
+@media screen and (max-width: 420px) {
+  .responsive-logo .navbar-brand .logo-text {
+    font-size: 24px !important;
+    margin-left: -4px !important;
+    transform: translateY(1px) !important;
+  }
+}
+@media screen and (max-width: 420px) {
+  .responsive-logo .logo-img {
+    height: 30px !important;
+    transform: rotate(20deg) !important;
+  }
+}

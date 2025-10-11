@@ -1,25 +1,13 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import AdminNavbar from "../pages/admin/AdminNavbar";
-import UserNavbar from "../pages/user/UserNavbar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
-import "../css/Navbar.css";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { FiChevronDown } from "react-icons/fi";
+import "../../css/UserNavbar.css"; // Import the CSS file for styling
 
-function Navbar() {
+const UserNavbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
-
-  const auth = useContext(AuthContext);
-
-  if (auth?.user?.role === "admin") {
-    return <AdminNavbar />;
-  }
-
-  if (auth?.user?.role === "user") {
-    return <UserNavbar />;
-  }
+  const [showAccount, setShowAccount] = useState(false);
 
   return (
     <>
@@ -75,11 +63,13 @@ function Navbar() {
                         Work designers are riffing on
                       </p>
                     </li>
+                    {/* items similarly */}
                   </ul>
                 </div>
               )}
             </div>
-            <Link to="#" className="text-dark text-decoration-none fw-medium">
+
+             <Link to="#" className="text-dark text-decoration-none fw-medium">
               Discover
             </Link>
             <Link to="#" className="text-dark text-decoration-none fw-medium">
@@ -137,32 +127,88 @@ function Navbar() {
             )}
           </div>
 
-          {/* Right: Search + Auth Buttons */}
-          <div className="d-flex align-items-center gap-3 auth-icons">
+          {/* Right: Search / Cart / Account */}
+          <div className="d-flex align-items-center gap-3">
             <FaSearch
               className="fs-5 cursor-pointer"
               onClick={() => setShowSearch(true)}
             />
+            <div className="position-relative">
+              <FaShoppingCart className="fs-5" />
+              <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+                2
+              </span>
+            </div>
 
-            {/* Auth Buttons */}
-            <div className="d-flex align-items-center gap-2 auth-buttons">
-              <Link
-                to="/login"
-                className="btn btn-outline-primary rounded-pill px-3"
+            {/* User Account Dropdown */}
+            <div className="d-flex align-items-center position-relative">
+              <div
+                className="d-flex align-items-center cursor-pointer"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowAccount(!showAccount)}
               >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="btn btn-primary rounded-pill px-3"
-              >
-                Sign Up
-              </Link>
+                <img
+                  src=""
+                  alt="User"
+                  className="rounded-circle"
+                  style={{ width: "35px", height: "35px" }}
+                />
+                <span className="ms-2 fw-medium d-none d-md-block">
+                  My Account
+                </span>
+                <FiChevronDown className="ms-1" />
+              </div>
+
+              {showAccount && (
+                <div
+                  className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 end-0 mt-2"
+                  style={{
+                    minWidth: "170px",
+                    width: "50%",
+                    maxWidth: "220px",
+                    zIndex: 1050,
+                    backgroundColor: "white",
+                  }}
+                >
+                  <ul className="list-unstyled mb-0">
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-truck me-2"></i> My Orders
+                    </li>
+
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-heart me-2"></i> Favourites Items
+                    </li>
+
+                    <hr />
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-person me-2"></i> Account
+                    </li>
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-gear me-2"></i> Settings
+                    </li>
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-shield-lock me-2"></i> Privacy
+                    </li>
+
+                    <hr />
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-book me-2"></i> Help Guide
+                    </li>
+                    <li className="mb-2 dropdown-item">
+                      <i className="bi bi-question-circle me-2"></i> Help Center
+                    </li>
+                    <hr />
+                    <li className="text-danger dropdown-item">
+                      <i className="bi bi-box-arrow-right me-2"></i> Log Out
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Mobile Categories Row */}
+        {/* Mobile Categories Row - Show only on small screens */}
         <div className="d-sm-none container-fluid px-3 mt-2">
           <div className="w-100 position-relative">
             <button
@@ -201,6 +247,7 @@ function Navbar() {
                       Work designers are riffing on
                     </p>
                   </li>
+                  {/* Add remaining items similarly */}
                 </ul>
               </div>
             )}
@@ -210,7 +257,7 @@ function Navbar() {
 
       {/* Search Overlay */}
       {showSearch && (
-        <div className="mobile search-overlay">
+        <div className="mobile search-overlay ">
           <div className="search-box bg-white p-4 rounded shadow-lg">
             <div className="d-flex align-items-center mb-3">
               <input
@@ -245,6 +292,6 @@ function Navbar() {
       )}
     </>
   );
-}
+};
 
-export default Navbar;
+export default UserNavbar;

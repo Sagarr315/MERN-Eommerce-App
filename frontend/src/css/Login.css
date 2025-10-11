@@ -1,0 +1,39 @@
+@media (max-width: 420px) {
+  .card {
+    padding: 1rem !important; /* smaller padding for small screens */
+  }
+  .card-body {
+    padding: 1rem !important;
+  }
+  h2.fw-bold {
+    font-size: 1.25rem; /* smaller title */
+  }
+  p.small {
+    font-size: 0.75rem;
+  }
+  .btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  input.form-control {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.5rem;
+  }
+  .d-flex.my-4 hr {
+    margin: 0 0.25rem;
+  }
+}
+
+ @media (max-width: 420px) {
+      .logo-text {
+        font-size: 35px !important; /* smaller font for small screens */
+      }
+      .logo-text img {
+        height: 35px !important;
+        width: 35px !important;
+      }
+      .logo-text span {
+        margin-left: -8px !important;
+        transform: translateY(-1px);
+      }
+    }
