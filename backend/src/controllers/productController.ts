@@ -59,13 +59,41 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
-// Get all products
+// Get products with optional category, search, and pagination
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.find();
-    res.json(products);
+    const { category, search, page = '1', limit = '10' } = req.query;
+
+    const query: any = {};
+
+    // Filter by category if provided
+    if (category) {
+      query.category = category.toString();
+    }
+
+    // Search by name (case-insensitive)
+    if (search) {
+      query.name = { $regex: search.toString(), $options: 'i' };
+    }
+
+    // Pagination
+    const pageNumber = parseInt(page.toString(), 10);
+    const pageSize = parseInt(limit.toString(), 10);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const total = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .skip(skip)
+      .limit(pageSize);
+
+    res.json({
+      total,
+      page: pageNumber,
+      pageSize,
+      products,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 

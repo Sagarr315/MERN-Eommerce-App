@@ -24,9 +24,16 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, phone, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email && !phone) {
+      return res.status(400).json({ message: "Email or phone is required" });
+    }
+
+    const user = await User.findOne({
+      $or: [{ email }, { phone }],
+    });
+
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -40,8 +47,17 @@ export const loginUser = async (req: Request, res: Response) => {
       expiresIn: "1d",
     });
 
-    res.json({ message: "Login successful", token });
-  } catch (error) {
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
+  } catch (error: any) {
     res.status(500).json({ message: "Server error", error });
   }
 };
