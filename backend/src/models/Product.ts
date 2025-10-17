@@ -4,9 +4,9 @@ export interface IProduct extends Document {
   title: string;
   description: string;
   price: number;
-  images ?: string[];
+  images?: string[];
   stock: number;
-  category: string;
+  category: mongoose.Types.ObjectId; // reference to Category
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,7 +18,9 @@ const productSchema = new Schema<IProduct>(
     price: { type: Number, required: true },
     images: [{ type: String, required: true }],
     stock: { type: Number, default: 0 },
-    category: { type: String, required: true },
+
+    //  Link to category (main/subcategory)
+    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
   },
   { timestamps: true }
 );
