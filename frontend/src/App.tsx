@@ -11,12 +11,17 @@ import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import Discover from "./pages/Discover";
+import Sarees from "./pages/sarees";
+import Kids from "./pages/kids";
+import Accessories from "./pages/Accessories";
 
 function App() {
   return (
     <>
       <AuthProvider>
         <Navbar />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -40,6 +45,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/discover" element={<Discover />} />
+          <Route path="/sarees" element={<Sarees />} />
+          <Route path="/kids" element={<Kids />} />
+          <Route path="/accessories" element={<Accessories />} />
         </Routes>
       </AuthProvider>
     </>

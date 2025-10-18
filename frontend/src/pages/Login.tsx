@@ -32,7 +32,7 @@ const Login = () => {
       const response = await axiosInstance.post("/auth/login", data);
       const result = response.data;
 
-      console.log("Login Response:", result);
+   
 
       if (result.token && result.user) {
         // Save using AuthContext
