@@ -9,6 +9,10 @@ export interface IProduct extends Document {
   category: mongoose.Types.ObjectId; // reference to Category
   createdAt: Date;
   updatedAt: Date;
+  featuredType?: 'latest' | 'new_arrival' | 'trending' | 'sale' | 'seasonal' | null;
+  featuredUntil?: Date;
+  isActive?: boolean;
+ 
 }
 
 const productSchema = new Schema<IProduct>(
@@ -21,8 +25,23 @@ const productSchema = new Schema<IProduct>(
 
     //  Link to category (main/subcategory)
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+ featuredType: {
+      type: String,
+      enum: ['latest', 'new_arrival', 'trending', 'sale', 'seasonal', null],
+      default: null
+    },
+    featuredUntil: {
+      type: Date,
+      default: null
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    }
   },
   { timestamps: true }
 );
+
+
 
 export default mongoose.model<IProduct>("Product", productSchema);

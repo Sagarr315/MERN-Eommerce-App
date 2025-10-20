@@ -41,6 +41,8 @@ export const createProduct = async (req: Request, res: Response) => {
       stock,
       category,
       images: imageUrls,
+      featuredType: req.body.featuredType || null,
+  featuredUntil: req.body.featuredUntil || null,
     });
 
     res.status(201).json({ message: "Product created", product });
@@ -187,6 +189,39 @@ export const getProducts = async (req: Request, res: Response) => {
       pageSize,
       products,
     });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// 🆕 ADD THIS NEW FUNCTION - Get Featured Products for Homepage
+export const getFeaturedProducts = async (req: Request, res: Response) => {
+  try {
+    const { type, limit = '12' } = req.query;
+
+    const query: any = { 
+      isActive: true,
+      featuredType: { $ne: null } // Only products with featuredType
+    };
+    
+    // Filter by specific featured type if provided
+    if (type && type !== 'all') {
+      query.featuredType = type;
+    }
+    
+    // Check if featuredUntil is still valid (if set)
+    query.$or = [
+      { featuredUntil: null },
+      { featuredUntil: { $gte: new Date() } }
+    ];
+
+    const productsLimit = parseInt(limit.toString(), 10);
+    const products = await Product.find(query)
+      .populate('category')
+      .limit(productsLimit)
+      .sort({ createdAt: -1 });
+      
+    res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
