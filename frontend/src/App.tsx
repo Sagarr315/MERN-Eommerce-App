@@ -15,6 +15,12 @@ import Discover from "./pages/Discover";
 import Sarees from "./pages/sarees";
 import Kids from "./pages/kids";
 import Accessories from "./pages/Accessories";
+import Footer from "./components/Footer";
+import ProductDetails from "./components/ProductDetails";
+import CartPage from './pages/CartPage';
+import WishlistPage from './pages/WishlistPage'; 
+import CheckoutPage from './pages/CheckoutPage';
+import OrdersPage from './pages/OrdersPage';
 
 function App() {
   return (
@@ -49,7 +55,17 @@ function App() {
           <Route path="/sarees" element={<Sarees />} />
           <Route path="/kids" element={<Kids />} />
           <Route path="/accessories" element={<Accessories />} />
+          // Add this route
+          <Route path="/products/:id" element={<ProductDetails />} />
+         <Route path="/cart" element={<CartPage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
+            // Add this route
+<Route path="/checkout" element={<CheckoutPage />} />
+
+<Route path="/orders" element={<OrdersPage />} />
+
         </Routes>
+        <Footer />
       </AuthProvider>
     </>
   );

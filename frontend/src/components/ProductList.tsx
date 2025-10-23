@@ -27,7 +27,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
   const [categoryName, setCategoryName] = useState<string>("");
   const limit = 12;
 
-  // Sort options
   const sortOptions = [
     { value: "name", label: "Name A-Z" },
     { value: "name_desc", label: "Name Z-A" },
@@ -36,7 +35,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
     { value: "newest", label: "Newest First" },
   ];
 
-  // Price range options
   const priceRanges = [
     { value: "all", label: "All Prices" },
     { value: "0-1000", label: "Under ₹1,000" },
@@ -75,7 +73,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
         setCategoryName("");
       }
     } catch (err: any) {
-      console.error(" Error fetching products:", err?.response?.data || err);
       setProducts([]);
       setTotal(0);
       setCategoryName("");
@@ -99,27 +96,43 @@ const ProductList: React.FC<Props> = ({ category }) => {
     setPriceRange("all");
     setPage(1);
   };
-  // Add these 3 functions after your existing handleSortChange, handlePriceRangeChange functions:
 
-  const handleAddToCart = (product: Product) => {
-    console.log("Add to cart:", product);
-    // TODO: Implement add to cart logic
+  const handleAddToCart = () => {
   };
 
-  const handleToggleWishlist = (product: Product) => {
-    console.log("Toggle wishlist:", product);
-    // TODO: Implement wishlist logic
+  const handleToggleWishlist = async (productId: string) => {
+    try {
+      const currentProduct = products.find(p => p._id === productId);
+      const isCurrentlyInWishlist = currentProduct?.isInWishlist || false;
+
+      if (isCurrentlyInWishlist) {
+        await axiosInstance.delete('/wishlist/remove', {
+          data: { productId }
+        });
+        alert('Removed from favorites!');
+      } else {
+        await axiosInstance.post('/wishlist/add', {
+          productId
+        });
+        alert('Added to favorites!');
+      }
+      
+      setProducts(prevProducts => 
+        prevProducts.map(p => 
+          p._id === productId 
+            ? { ...p, isInWishlist: !isCurrentlyInWishlist }
+            : p
+        )
+      );
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to update wishlist');
+    }
   };
 
-  const handleQuickView = (product: Product) => {
-    console.log("Quick view:", product);
-    // TODO: Implement quick view modal
-  };
   const totalPages = Math.ceil(total / limit);
 
   return (
     <Container className="my-4">
-      {/* Header Section */}
       <Row className="mb-4">
         <Col>
           <div className="d-flex justify-content-between align-items-center">
@@ -130,7 +143,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
               <p className="text-muted mb-0">{total} products found</p>
             </div>
             <div className="d-flex gap-3">
-              {/* Sort Dropdown */}
               <Form.Group controlId="sortSelect" className="mb-0">
                 <Form.Label className="fw-semibold me-2">Sort by:</Form.Label>
                 <Form.Select
@@ -147,7 +159,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
                 </Form.Select>
               </Form.Group>
 
-              {/* Price Range Filter */}
               <Form.Group controlId="priceRangeSelect" className="mb-0">
                 <Form.Label className="fw-semibold me-2">Price:</Form.Label>
                 <Form.Select
@@ -164,7 +175,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
                 </Form.Select>
               </Form.Group>
 
-              {/* Clear Filters */}
               <Button
                 variant="outline-secondary"
                 onClick={clearFilters}
@@ -177,7 +187,6 @@ const ProductList: React.FC<Props> = ({ category }) => {
         </Col>
       </Row>
 
-      {/* Products Grid */}
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" className="mb-3" />
@@ -204,13 +213,12 @@ const ProductList: React.FC<Props> = ({ category }) => {
                   product={product}
                   onAddToCart={handleAddToCart}
                   onToggleWishlist={handleToggleWishlist}
-                  onQuickView={handleQuickView}
+                  isInWishlist={product.isInWishlist || false}
                 />
               </Col>
             ))}
           </Row>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="d-flex justify-content-center align-items-center mt-5">
               <Button

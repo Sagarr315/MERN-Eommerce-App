@@ -69,17 +69,29 @@ const UserNavbar = () => {
               )}
             </div>
 
-             <Link to="/discover" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/discover"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Discover
             </Link>
-            <Link to="/sarees" className="text-dark text-decoration-none fw-medium">
-             Saree Stories
+            <Link
+              to="/sarees"
+              className="text-dark text-decoration-none fw-medium"
+            >
+              Saree Stories
             </Link>
-            <Link to="/kids" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/kids"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Mini Wardrobe
             </Link>
-            <Link to="/accessories" className="text-dark text-decoration-none fw-medium">
-            Accessories Lab
+            <Link
+              to="/accessories"
+              className="text-dark text-decoration-none fw-medium"
+            >
+              Accessories Lab
             </Link>
           </div>
 
@@ -133,12 +145,14 @@ const UserNavbar = () => {
               className="fs-5 cursor-pointer"
               onClick={() => setShowSearch(true)}
             />
-            <div className="position-relative">
-              <FaShoppingCart className="fs-5" />
-              <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
-                2
-              </span>
-            </div>
+            <Link to="/cart" className="text-decoration-none text-dark">
+              <div className="position-relative">
+                <FaShoppingCart className="fs-5" />
+                <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+                  2
+                </span>
+              </div>
+            </Link>
 
             {/* User Account Dropdown */}
             <div className="d-flex align-items-center position-relative">
@@ -171,14 +185,22 @@ const UserNavbar = () => {
                   }}
                 >
                   <ul className="list-unstyled mb-0">
+                     <Link
+                      to="/orders"
+                      className="text-decoration-none text-dark"
+                    >
                     <li className="mb-2 dropdown-item">
                       <i className="bi bi-truck me-2"></i> My Orders
                     </li>
-
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-heart me-2"></i> Favourites Items
-                    </li>
-
+                    </Link>
+                    <Link
+                      to="/wishlist"
+                      className="text-decoration-none text-dark"
+                    >
+                      <li className="mb-2 dropdown-item">
+                        <i className="bi bi-heart me-2"></i> Favourites Items
+                      </li>
+                    </Link>
                     <hr />
                     <li className="mb-2 dropdown-item">
                       <i className="bi bi-person me-2"></i> Account

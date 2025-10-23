@@ -1,5 +1,12 @@
 * {
-  font-family: 'Poppins';}
+  font-family: 'Poppins';
+  
+}
+
+*.btn{
+  color:#6C757D !important;
+}
+
 
 nav.navbar.fixed-top ~ * {
   padding-top: 60px;

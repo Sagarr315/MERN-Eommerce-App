@@ -1,23 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Product } from "../types/Product";
-import { FaHeart, FaCartPlus, FaEye,  FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaCartPlus, FaEye, FaRegHeart } from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
+import axiosInstance from "../api/axiosInstance";
 import "../css/ProductLayout.css";
 
 interface Props {
-  product: Product;
+  product: Product | null;
   onAddToCart: (product: Product) => void;
-  onToggleWishlist: (product: Product) => void;
-  onQuickView: (product: Product) => void;
+  onToggleWishlist: (productId: string) => void;
+  isInWishlist?: boolean;
 }
 
 const ProductLayout: React.FC<Props> = ({ 
   product, 
   onAddToCart, 
   onToggleWishlist, 
-  onQuickView 
+  isInWishlist = false
 }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext)!;
+
+  if (!product) {
+    return (
+      <div className="product-card">
+        <div className="product-image-container">
+          <img 
+            src="https://placehold.co/300x300?text=No+Product" 
+            alt="Product not available"
+            className="product-image"
+          />
+        </div>
+        <div className="product-details">
+          <h3 className="product-title">Product not available</h3>
+          <p className="product-description">This product could not be loaded.</p>
+        </div>
+      </div>
+    );
+  }
 
   const imageUrl =
     product.images && product.images.length > 0
@@ -26,35 +49,65 @@ const ProductLayout: React.FC<Props> = ({
         : `http://localhost:5000${product.images[0]}`
       : "https://placehold.co/300x300?text=No+Image";
 
-  const handleWishlistClick = () => {
-    setIsWishlisted(!isWishlisted);
-    onToggleWishlist(product);
+  const handleWishlistClick = async () => {
+    if (!user) {
+      alert("Please login to manage wishlist");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await onToggleWishlist(product._id);
+    } catch (error) {
+    }
   };
 
-  const handleAddToCart = () => {
-    onAddToCart(product);
+  const handleAddToCart = async () => {
+    if (!user) {
+      alert("Please login to add items to cart");
+      navigate("/login");
+      return;
+    }
+
+    setAddingToCart(true);
+    try {
+      await axiosInstance.post('/cart/add', {
+        userId: user.id,
+        productId: product._id,
+        quantity: 1
+      });
+
+      alert('Product added to cart successfully!');
+      
+      if (onAddToCart) {
+        onAddToCart(product);
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to add product to cart');
+    } finally {
+      setAddingToCart(false);
+    }
   };
 
   const handleQuickView = () => {
-    onQuickView(product);
+    navigate(`/products/${product._id}`);
   };
 
-  // Safe category name extraction - FIXED THE ERROR
+  const handleCardClick = () => {
+    navigate(`/products/${product._id}`);
+  };
+
   const getCategoryName = () => {
     if (!product.category) return '';
-    
-    // Handle different category formats safely
     if (typeof product.category === 'object') {
-      const categoryObj = product.category as any; // Use type assertion
+      const categoryObj = product.category as any;
       return categoryObj.name || '';
     }
-    
     return String(product.category);
   };
 
   return (
-    <div className="product-card">
-      {/* Product Image with Overlay */}
+    <div className="product-card" onClick={handleCardClick} style={{cursor: 'pointer'}}>
       <div className="product-image-container">
         <img 
           src={imageUrl} 
@@ -63,28 +116,31 @@ const ProductLayout: React.FC<Props> = ({
           onLoad={() => setImageLoaded(true)}
         />
         
-        {/* Quick Actions Overlay */}
         <div className="product-actions-overlay">
           <button 
             className="action-btn quick-view-btn"
-            onClick={handleQuickView}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleQuickView();
+            }}
             title="Quick View"
           >
             <FaEye />
           </button>
           <button 
-            className={`action-btn wishlist-btn ${isWishlisted ? 'active' : ''}`}
-            onClick={handleWishlistClick}
-            title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+            className={`action-btn wishlist-btn ${isInWishlist ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleWishlistClick();
+            }}
+            title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
           >
-            {isWishlisted ? <FaHeart /> : <FaRegHeart />}
+            {isInWishlist ? <FaHeart /> : <FaRegHeart />}
           </button>
         </div>
       </div>
 
-      {/* Product Info */}
       <div className="product-details">
-        {/* Category Tag */}
         {product.category && (
           <span className="product-category">
             {getCategoryName()}
@@ -100,27 +156,28 @@ const ProductLayout: React.FC<Props> = ({
           }
         </p>
 
-        
-
-        {/* Price Section */}
         <div className="product-price-section">
           <div className="price-container">
             <span className="current-price">₹{product.price.toLocaleString()}</span>
           </div>
           
-          {/* Stock Status */}
           <div className="stock-status">
-            <span className="in-stock">Available</span>
+            <span className={`stock-badge ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+              {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+            </span>
           </div>
         </div>
 
-        {/* Add to Cart Button */}
         <button 
           className="add-to-cart-btn"
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCart();
+          }}
+          disabled={product.stock === 0 || addingToCart}
         >
           <FaCartPlus className="cart-icon" />
-          Add to Cart
+          {addingToCart ? 'Adding...' : (product.stock === 0 ? 'Out of Stock' : 'Add to Cart')}
         </button>
       </div>
     </div>

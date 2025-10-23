@@ -134,13 +134,14 @@ const AdminNavbar = () => {
               className="fs-5 cursor-pointer"
               onClick={() => setShowSearch(true)}
             />
-            <div className="position-relative">
-              <FaShoppingCart className="fs-5" />
-              <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
-                2
-              </span>
-            </div>
-
+            <Link to="/cart" className="text-decoration-none text-dark">
+              <div className="position-relative">
+                <FaShoppingCart className="fs-5" />
+                <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+                  2
+                </span>
+              </div>
+            </Link>
             {/* User Account Dropdown */}
             <div className="d-flex align-items-center position-relative">
               <div
