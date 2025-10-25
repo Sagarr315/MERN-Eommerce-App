@@ -18,8 +18,7 @@ router.get("/:id", getProductById);
 
 router.get("/featured/products", getFeaturedProducts);
 // Admin-only routes
-router.post("/", protect, adminOnly, upload.single("image"), createProduct);
-
+router.post("/", protect, adminOnly, upload.array("images"), createProduct);
 router.put("/:id", protect, adminOnly, updateProduct);
 router.delete("/:id", protect, adminOnly, deleteProduct);
 

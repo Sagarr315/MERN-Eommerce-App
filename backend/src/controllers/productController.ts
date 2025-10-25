@@ -7,33 +7,29 @@ import Category from '../models/Category';
 // Create new product (Admin only)
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { title, description, price, stock, category } = req.body;
+    const { title, description, price, stock, category, featuredType, featuredUntil } = req.body;
 
-    // Validate required fields
-    if (!title || !price || !stock) {
-      return res.status(400).json({ message: "Title, price, stock required" });
+    if (!title || !price || !stock || !category) {
+      return res.status(400).json({ message: "Title, price, stock, and category are required." });
     }
 
-    let imageUrls: string[] = [];
+    const imageUrls: string[] = [];
 
-    if (req.file) {
-      try {
-        const fileBase64 = `data:${
-          req.file.mimetype
-        };base64,${req.file.buffer.toString("base64")}`;
-        const uploaded = await cloudinary.uploader.upload(fileBase64, {
+    if (req.files && Array.isArray(req.files)) {
+      for (const file of req.files) {
+        const base64 = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+        const uploaded = await cloudinary.uploader.upload(base64, {
           folder: "ecommerce_products",
         });
         imageUrls.push(uploaded.secure_url);
-      } catch (err: any) {
-        console.error("Cloudinary upload error:", err);
-        return res
-          .status(500)
-          .json({ message: "Cloudinary upload failed", error: err.message });
       }
+    } else if (req.file) {
+    
+      const base64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+      const uploaded = await cloudinary.uploader.upload(base64, { folder: "ecommerce_products" });
+      imageUrls.push(uploaded.secure_url);
     }
 
-    // Create product in database
     const product = await Product.create({
       title,
       description,
@@ -41,14 +37,14 @@ export const createProduct = async (req: Request, res: Response) => {
       stock,
       category,
       images: imageUrls,
-      featuredType: req.body.featuredType || null,
-  featuredUntil: req.body.featuredUntil || null,
+      featuredType: featuredType || null,
+      featuredUntil: featuredUntil ? new Date(featuredUntil) : null,
     });
 
-    res.status(201).json({ message: "Product created", product });
+    return res.status(201).json({ message: "Product created successfully", product });
   } catch (error: any) {
     console.error("Create product error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error while creating product" });
   }
 };
 

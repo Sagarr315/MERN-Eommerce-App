@@ -1,14 +1,24 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICategory extends Document {
-  name: string;              // e.g., "Saree", "Silk Saree"
+  name: string; // e.g., "Saree", "Silk Saree"
   parentCategory?: mongoose.Types.ObjectId | null; // null for main category
+  isActive: boolean; //  NEW FIELD
 }
 
 const categorySchema = new Schema<ICategory>(
   {
     name: { type: String, required: true },
-    parentCategory: { type: Schema.Types.ObjectId, ref: "Category", default: null },
+    parentCategory: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
+    //  NEW FIELD
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
