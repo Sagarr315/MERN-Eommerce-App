@@ -79,16 +79,28 @@ function Navbar() {
                 </div>
               )}
             </div>
-            <Link to="/discover" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/discover"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Discover
             </Link>
-            <Link to="/sarees" className="text-dark text-decoration-none fw-medium">
-             Saree Stories
+            <Link
+              to="/sarees"
+              className="text-dark text-decoration-none fw-medium"
+            >
+              Saree Stories
             </Link>
-            <Link to="/kids" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/kids"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Mini Wardrobe
             </Link>
-            <Link to="/accessories" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/accessories"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Accessories Lab
             </Link>
           </div>

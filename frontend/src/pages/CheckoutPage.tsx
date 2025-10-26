@@ -18,6 +18,8 @@ const CheckoutPage: React.FC = () => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<string>('new');
   const { user } = useContext(AuthContext)!;
   const navigate = useNavigate();
 
@@ -37,6 +39,7 @@ const CheckoutPage: React.FC = () => {
       return;
     }
     fetchCart();
+    fetchUserAddresses();
   }, [user, navigate]);
 
   const fetchCart = async () => {
@@ -49,10 +52,49 @@ const CheckoutPage: React.FC = () => {
       setLoading(false);
     }
   };
+const fetchUserAddresses = async () => {
+  try {
+    const response = await axiosInstance.get(`/admin/users/${user?.id}`);
+    setSavedAddresses(response.data.addresses || []);
+  } catch (error) {
+    console.error('Failed to fetch addresses');
+  }
+};
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAddress(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddressSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedAddress(value);
+    
+    if (value !== 'new') {
+      const selected = savedAddresses.find(addr => addr._id === value);
+      if (selected) {
+        setAddress({
+          fullName: selected.fullName,
+          phone: selected.phone,
+          street: selected.street,
+          city: selected.city,
+          state: selected.state,
+          zipCode: selected.zipCode,
+          country: selected.country
+        });
+      }
+    } else {
+      // Reset form for new address
+      setAddress({
+        fullName: '',
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: 'India',
+        phone: ''
+      });
+    }
   };
 
   const calculateSubtotal = (): number => {
@@ -69,19 +111,35 @@ const CheckoutPage: React.FC = () => {
   const handlePlaceOrder = async () => {
     if (!user || !cart) return;
 
+    // Validate required address fields
+    if (!address.fullName || !address.phone || !address.street || !address.city || !address.state || !address.zipCode) {
+      alert('Please fill all required address fields');
+      return;
+    }
+
     setPlacingOrder(true);
     try {
       const orderData = {
         products: cart.products.map(item => ({
           productId: item.productId._id,
           quantity: item.quantity
-        }))
+        })),
+        shippingAddress: {
+          fullName: address.fullName,
+          phone: address.phone,
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          zipCode: address.zipCode,
+          country: address.country
+        }
       };
 
       await axiosInstance.post('/orders', orderData);
       
       alert('Order placed successfully!');
       
+      // Clear cart after successful order
       for (const item of cart.products) {
         await axiosInstance.delete('/cart/remove', {
           data: { 
@@ -134,6 +192,25 @@ const CheckoutPage: React.FC = () => {
               <h4>Shipping Address</h4>
             </div>
             <div className="card-body">
+              {/* Address Selection Dropdown */}
+              {savedAddresses.length > 0 && (
+                <div className="mb-4">
+                  <label className="form-label">Select Saved Address</label>
+                  <select 
+                    className="form-select"
+                    value={selectedAddress}
+                    onChange={handleAddressSelect}
+                  >
+                    <option value="new">Add New Address</option>
+                    {savedAddresses.map(addr => (
+                      <option key={addr._id} value={addr._id}>
+                        {addr.fullName} - {addr.street}, {addr.city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="fullName" className="form-label">Full Name *</label>

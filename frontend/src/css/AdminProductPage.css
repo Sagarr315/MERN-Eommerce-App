@@ -1,0 +1,13 @@
+form {
+  background: #fff;
+  border-radius: 12px;
+}
+
+.form-label {
+  color: #333;
+}
+
+button {
+  border-radius: 8px;
+  font-weight: 500;
+}

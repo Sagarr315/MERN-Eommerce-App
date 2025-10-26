@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import "../../css/UserNavbar.css"; // Import the CSS file for styling
+import LogoutButton from "../../components/LogoutButton";
 
 const UserNavbar = () => {
   const [showSearch, setShowSearch] = useState(false);
@@ -220,9 +221,7 @@ const UserNavbar = () => {
                       <i className="bi bi-question-circle me-2"></i> Help Center
                     </li>
                     <hr />
-                    <li className="text-danger dropdown-item">
-                      <i className="bi bi-box-arrow-right me-2"></i> Log Out
-                    </li>
+                    <LogoutButton />
                   </ul>
                 </div>
               )}

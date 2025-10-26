@@ -17,11 +17,16 @@ import Kids from "./pages/kids";
 import Accessories from "./pages/Accessories";
 import Footer from "./components/Footer";
 import ProductDetails from "./components/ProductDetails";
-import CartPage from './pages/CartPage';
-import WishlistPage from './pages/WishlistPage'; 
-import CheckoutPage from './pages/CheckoutPage';
-import OrdersPage from './pages/OrdersPage';
-
+import CartPage from "./pages/CartPage";
+import WishlistPage from "./pages/WishlistPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrdersPage from "./pages/OrdersPage";
+import AdminProductPage from "./pages/admin/AdminProductPage";
+import AdminProductsList from "./pages/admin/AdminProductsList";
+import AdminCategoriesList from "./pages/admin/AdminCategoriesList";
+import AdminRoute from "./components/AdminRoute";
+import AdminOrdersList from "./pages/admin/AdminOrdersList";
+import AdminNotifications from "./pages/admin/AdminNotifications";
 function App() {
   return (
     <>
@@ -30,8 +35,16 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+           <Route path="/login" element={
+            <ProtectedRoute type="guest">
+              <Login />
+            </ProtectedRoute>
+          } />
+          <Route path="/register" element={
+            <ProtectedRoute type="guest">
+              <Register />
+            </ProtectedRoute>
+          } />
           <Route path="/about" element={<About />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
@@ -55,15 +68,67 @@ function App() {
           <Route path="/sarees" element={<Sarees />} />
           <Route path="/kids" element={<Kids />} />
           <Route path="/accessories" element={<Accessories />} />
-          // Add this route
           <Route path="/products/:id" element={<ProductDetails />} />
-         <Route path="/cart" element={<CartPage />} />
-            <Route path="/wishlist" element={<WishlistPage />} />
-            // Add this route
-<Route path="/checkout" element={<CheckoutPage />} />
-
-<Route path="/orders" element={<OrdersPage />} />
-
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/AdminProductPage"
+            element={
+              <AdminRoute>
+                <AdminProductPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/AdminProductPage/:id"
+            element={
+              <AdminRoute>
+                <AdminProductPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/AdminProductsList"
+            element={
+              <AdminRoute>
+                <AdminProductsList />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/AdminCategoriesList"
+            element={
+              <AdminRoute>
+                <AdminCategoriesList />
+              </AdminRoute>
+            }
+          />
+      <Route 
+  path="/admin/AdminOrdersList" 
+  element={
+    <AdminRoute>
+      <AdminOrdersList />
+    </AdminRoute>
+  } 
+/>
+<Route 
+path="/admin/AdminNotifications" 
+element={
+  <AdminRoute>
+    <AdminNotifications />
+  </AdminRoute>
+} 
+/>
         </Routes>
         <Footer />
       </AuthProvider>

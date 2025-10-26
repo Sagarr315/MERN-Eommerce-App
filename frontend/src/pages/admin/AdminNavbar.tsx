@@ -1,14 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import "../../css/AdminNavbar.css";
 import { Link } from "react-router-dom";
+import LogoutButton from "../../components/LogoutButton";
+import axiosInstance from "../../api/axiosInstance";
 
 const AdminNavbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await axiosInstance.get("/notifications");
+      const unread = res.data.filter((n: any) => !n.read).length;
+      setUnreadCount(unread);
+    } catch (err) {
+      console.error("Failed to fetch notifications");
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadCount();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-white py-2 shadow-sm fixed-top">
@@ -69,19 +88,30 @@ const AdminNavbar = () => {
               )}
             </div>
 
-             <Link to="/discover" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/discover"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Discover
             </Link>
-            <Link to="/sarees" className="text-dark text-decoration-none fw-medium">
-             Saree Stories
+            <Link
+              to="/sarees"
+              className="text-dark text-decoration-none fw-medium"
+            >
+              Saree Stories
             </Link>
-            <Link to="/kids" className="text-dark text-decoration-none fw-medium">
+            <Link
+              to="/kids"
+              className="text-dark text-decoration-none fw-medium"
+            >
               Mini Wardrobe
             </Link>
-            <Link to="/accessories" className="text-dark text-decoration-none fw-medium">
-            Accessories Lab
+            <Link
+              to="/accessories"
+              className="text-dark text-decoration-none fw-medium"
+            >
+              Accessories Lab
             </Link>
-           
           </div>
 
           {/* Center: Only Categories Button - Visible on medium screens */}
@@ -173,17 +203,37 @@ const AdminNavbar = () => {
                   }}
                 >
                   <ul className="list-unstyled mb-0">
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-plus-lg me-2"></i> Add Products
-                    </li>
+                    <Link
+                      to="/admin/AdminProductPage"
+                      className="text-decoration-none text-dark"
+                    >
+                      <li className="mb-2 dropdown-item">
+                        <i className="bi bi-plus-lg me-2"></i> Add Products
+                      </li>
+                    </Link>
 
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-card-checklist me-2"></i> Manage
-                      Orders
-                    </li>
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-bell me-2"></i> Notification
-                    </li>
+                    <Link
+                      to="/admin/AdminOrdersList"
+                      className="text-decoration-none text-dark"
+                    >
+                      <li className="mb-2 dropdown-item">
+                        <i className="bi bi-card-checklist me-2"></i> Manage
+                        Orders
+                      </li>
+                    </Link>
+                    <Link
+                      to="/admin/AdminNotifications"
+                      className="text-decoration-none text-dark"
+                    >
+                      <li className="dropdown-item d-flex justify-content-between align-items-center">
+                        <span>
+                          <i className="bi bi-bell me-2"></i> Notification
+                        </span>
+                        {unreadCount > 0 && (
+                          <span className="badge bg-danger">{unreadCount}</span>
+                        )}
+                      </li>
+                    </Link>
                     <hr />
                     <li className="mb-2 dropdown-item">
                       <i className="bi bi-person me-2"></i> Account
@@ -202,10 +252,10 @@ const AdminNavbar = () => {
                     <li className="mb-2 dropdown-item">
                       <i className="bi bi-question-circle me-2"></i> Help Center
                     </li>
+
                     <hr />
-                    <li className="text-danger dropdown-item">
-                      <i className="bi bi-box-arrow-right me-2"></i> Log Out
-                    </li>
+
+                    <LogoutButton />
                   </ul>
                 </div>
               )}
