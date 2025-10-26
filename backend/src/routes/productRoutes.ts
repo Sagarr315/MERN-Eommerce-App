@@ -5,7 +5,8 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
-   getFeaturedProducts
+   getFeaturedProducts,
+   updateProductImages
 } from "../controllers/productController";
 import { protect, adminOnly } from "../middleware/authMiddleware";
 import { upload } from "../config/multer";
@@ -19,7 +20,9 @@ router.get("/:id", getProductById);
 router.get("/featured/products", getFeaturedProducts);
 // Admin-only routes
 router.post("/", protect, adminOnly, upload.array("images"), createProduct);
-router.put("/:id", protect, adminOnly, updateProduct);
+router.patch("/:id", protect, adminOnly, updateProduct);
 router.delete("/:id", protect, adminOnly, deleteProduct);
+//  ADD THIS ROUTE:
+router.patch("/:id/images", protect, adminOnly, upload.array("images"), updateProductImages);
 
 export default router;

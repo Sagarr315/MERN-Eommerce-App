@@ -12,6 +12,28 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+// GET user by ID with addresses (for checkout)
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const reqUser = (req as any).user;
+
+    // Allow user to fetch own data or admin to fetch any
+    if (reqUser.role !== "admin" && reqUser.id !== id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err: any) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 // DELETE user by ID
 export const deleteUser = async (req: Request, res: Response) => {
   try {

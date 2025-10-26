@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import User from "../models/User";
 import Order from "../models/Order";
 import Product from "../models/Product";
 import Notification from "../models/notification"; 
@@ -30,30 +31,81 @@ const buildOrderProducts = async (items: { productId: string; quantity: number }
 // POST make the order 
 export const createOrder = async (req: Request, res: Response) => {
   try {
-    // authenticated user set by protect middleware
     const user = (req as any).user;
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
-    const { products } = req.body as { products: { productId: string; quantity: number }[] };
+    const { products, shippingAddress } = req.body as { 
+      products: { productId: string; quantity: number }[];
+      shippingAddress?: {
+        fullName: string;
+        phone: string;
+        street: string;
+        city: string;
+        state: string;
+        zipCode: string;
+        country: string;
+      };
+    };
 
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "Products are required" });
     }
 
-    // build product entries with current price
     const orderProducts = await buildOrderProducts(products);
-
-    // compute total
     const totalAmount = orderProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
     const order = await Order.create({
       userId: user.id,
+      customerInfo: {
+        name: shippingAddress?.fullName || user.name,
+        email: user.email,
+        shippingAddress: shippingAddress || {
+          fullName: user.name,
+          phone: user.phone || '',
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: 'India'
+        }
+      },
       products: orderProducts,
       totalAmount,
       status: "pending",
     });
 
-       // reduce stock for each ordered product
+    // Auto-save shipping address to user's address book
+    if (shippingAddress) {
+      try {
+        const userData = await User.findById(user.id);
+        if (userData) {
+          const addressExists = userData.addresses.some(addr => 
+            addr.street === shippingAddress.street && 
+            addr.city === shippingAddress.city && 
+            addr.zipCode === shippingAddress.zipCode
+          );
+          
+          if (!addressExists) {
+            userData.addresses.push({
+              fullName: shippingAddress.fullName,
+              phone: shippingAddress.phone,
+              street: shippingAddress.street,
+              city: shippingAddress.city,
+              state: shippingAddress.state,
+              zipCode: shippingAddress.zipCode,
+              country: shippingAddress.country,
+              type: 'shipping',
+              isDefault: userData.addresses.length === 0
+            });
+            await userData.save();
+          }
+        }
+      } catch (error) {
+        console.log('Failed to save address to user profile:', error);
+      }
+    }
+
+    // reduce stock for each ordered product
     for (const item of orderProducts) {
       await Product.findByIdAndUpdate(
         item.productId,
@@ -62,9 +114,9 @@ export const createOrder = async (req: Request, res: Response) => {
       );
     }
 
-    //  create notification for admin
+    // create notification for admin
     await Notification.create({
-      message: `New order placed by user ${user.id}`,
+      message: `New order from ${order.customerInfo.name} (${order.customerInfo.shippingAddress.phone}) - ₹${totalAmount}`,
       type: "order",
       userId: user.id,
     });

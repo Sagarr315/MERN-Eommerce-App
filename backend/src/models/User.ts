@@ -7,6 +7,17 @@ export interface IUser extends Document {
   email: string;
   password: string;
   phone?: string;
+  addresses: {
+    fullName: string;
+    phone: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    type: string;
+    isDefault: boolean;
+  }[];
   role: "user" | "admin";
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -32,6 +43,17 @@ const userSchema = new Schema<IUser>(
       minlength: 6,
     },
     phone: { type: String },
+    addresses: [{
+      fullName: { type: String, trim: true },
+      phone: { type: String, trim: true },
+      street: { type: String, trim: true },
+      city: { type: String, trim: true },
+      state: { type: String, trim: true },
+      zipCode: { type: String, trim: true },
+      country: { type: String, default: "India", trim: true },
+      type: { type: String, default: "shipping" },
+      isDefault: { type: Boolean, default: false }
+    }],
     role: {
       type: String,
       enum: ["user", "admin"],
