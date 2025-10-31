@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import axiosInstance from "../api/axiosInstance";
-import WishlistComponent from "../components/Wishlist";
+import { AuthContext } from "../../context/AuthContext";
+import axiosInstance from "../../api/axiosInstance";
+import WishlistComponent from "../../components/Wishlist";
 
 const WishlistPage: React.FC = () => {
   const { user } = useContext(AuthContext) || {};

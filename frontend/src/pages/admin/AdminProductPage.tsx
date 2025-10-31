@@ -3,6 +3,16 @@ import type { FormEvent } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import "../../css/AdminProductPage.css";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  FaBox,
+  FaFolder,
+  FaEdit,
+  FaPlus,
+  FaTimes,
+  FaSave,
+  FaImage,
+  FaSpinner,
+} from "react-icons/fa";
 
 type Category = {
   _id: string;
@@ -10,12 +20,18 @@ type Category = {
   parentCategory?: string | null;
 };
 
-type FeaturedType = "latest" | "new_arrival" | "trending" | "sale" | "seasonal" | "null";
+type FeaturedType =
+  | "latest"
+  | "new_arrival"
+  | "trending"
+  | "sale"
+  | "seasonal"
+  | "null";
 
 const AdminProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   // Product States
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -26,13 +42,13 @@ const AdminProductPage: React.FC = () => {
   const [featuredType, setFeaturedType] = useState<FeaturedType>("null");
   const [featuredUntil, setFeaturedUntil] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(true);
-  
+
   // Category Management States
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [parentCategory, setParentCategory] = useState<string>("");
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  
+
   // UI States
   const [loading, setLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
@@ -66,14 +82,16 @@ const AdminProductPage: React.FC = () => {
     try {
       const res = await axiosInstance.get(`/products/${id}`);
       const product = res.data;
-      
+
       setTitle(product.title);
       setDescription(product.description);
       setPrice(product.price);
       setStock(product.stock);
       setCategory(product.category._id);
       setFeaturedType(product.featuredType || "null");
-      setFeaturedUntil(product.featuredUntil ? product.featuredUntil.split('T')[0] : "");
+      setFeaturedUntil(
+        product.featuredUntil ? product.featuredUntil.split("T")[0] : ""
+      );
       setIsActive(product.isActive);
       setExistingImages(product.images || []);
     } catch (err) {
@@ -96,12 +114,12 @@ const AdminProductPage: React.FC = () => {
     try {
       const payload = {
         name: newCategoryName.trim(),
-        parentCategory: parentCategory || null
+        parentCategory: parentCategory || null,
       };
 
       await axiosInstance.post("/categories", payload);
 
-      setSuccess("✅ Category created successfully!");
+      setSuccess("Category created successfully!");
       setNewCategoryName("");
       setParentCategory("");
       setShowCategoryForm(false);
@@ -117,7 +135,7 @@ const AdminProductPage: React.FC = () => {
   // Build nested category options for dropdown
   const buildCategoryOptions = (items: Category[]) => {
     const map = new Map<string | null, Category[]>();
-    
+
     items.forEach((c) => {
       const key = c.parentCategory ?? null;
       if (!map.has(key)) map.set(key, []);
@@ -129,11 +147,11 @@ const AdminProductPage: React.FC = () => {
     function buildOptions(parent: string | null, depth = 0) {
       const list = map.get(parent) || [];
       list.sort((a, b) => a.name.localeCompare(b.name));
-      
+
       for (const item of list) {
-        result.push({ 
-          id: item._id, 
-          label: `${"── ".repeat(depth)}${item.name}` 
+        result.push({
+          id: item._id,
+          label: `${"── ".repeat(depth)}${item.name}`,
         });
         buildOptions(item._id, depth + 1);
       }
@@ -150,10 +168,10 @@ const AdminProductPage: React.FC = () => {
     }
   };
 
-  // ✅ CORRECTED: PATCH for EDIT, FormData for CREATE
+  // CORRECTED: PATCH for EDIT, FormData for CREATE
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!title || !description || !price || !category) {
       setError("Please fill all required fields");
@@ -171,7 +189,7 @@ const AdminProductPage: React.FC = () => {
 
     try {
       if (isEditMode) {
-        // ✅ EDIT MODE: Use PATCH with JSON (no images)
+        // EDIT MODE: Use PATCH with JSON (no images)
         const payload = {
           title,
           description,
@@ -180,30 +198,29 @@ const AdminProductPage: React.FC = () => {
           category,
           isActive,
           featuredType: featuredType !== "null" ? featuredType : null,
-          featuredUntil: featuredUntil || null
+          featuredUntil: featuredUntil || null,
         };
 
-        await axiosInstance.patch(`/products/${id}`, payload); // ✅ CHANGED TO PATCH
-        setSuccess("✅ Product updated successfully!");
-        
+        await axiosInstance.patch(`/products/${id}`, payload); // CHANGED TO PATCH
+        setSuccess("Product updated successfully!");
       } else {
-        // ✅ CREATE MODE: Use FormData (with images)
+        // CREATE MODE: Use FormData (with images)
         const formData = new FormData();
-        
+
         formData.append("title", title);
         formData.append("description", description);
         formData.append("price", price.toString());
         formData.append("stock", stock.toString());
         formData.append("category", category);
         formData.append("isActive", String(isActive));
-        
+
         if (featuredType !== "null") {
           formData.append("featuredType", featuredType);
         }
         if (featuredUntil) {
           formData.append("featuredUntil", featuredUntil);
         }
-        
+
         images.forEach((image) => {
           formData.append("images", image);
         });
@@ -212,8 +229,8 @@ const AdminProductPage: React.FC = () => {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        setSuccess("✅ Product created successfully!");
-        
+        setSuccess("Product created successfully!");
+
         // Reset form for create mode
         setTitle("");
         setDescription("");
@@ -225,15 +242,17 @@ const AdminProductPage: React.FC = () => {
         setFeaturedUntil("");
         setIsActive(true);
       }
-      
     } catch (err: any) {
       console.error("Product operation error:", err);
-      setError(err.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} product`);
+      setError(
+        err.response?.data?.message ||
+          `Failed to ${isEditMode ? "update" : "create"} product`
+      );
     } finally {
       setLoading(false);
     }
   };
-  
+
   //  NEW: Handle updating images in edit mode
   const handleUpdateImages = async () => {
     if (images.length === 0) {
@@ -254,7 +273,7 @@ const AdminProductPage: React.FC = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setSuccess(" Product images updated successfully!");
+      setSuccess("Product images updated successfully!");
       setImages([]);
       fetchProductData();
     } catch (err: any) {
@@ -263,60 +282,71 @@ const AdminProductPage: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   const categoryOptions = buildCategoryOptions(categories);
-  const mainCategories = categories.filter(cat => !cat.parentCategory);
+  const mainCategories = categories.filter((cat) => !cat.parentCategory);
 
   return (
-    <div className="container my-5">
+    <div className="admin-product-container mt-4">
       {/* Navigation Buttons */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-body text-center">
-              <div className="d-flex justify-content-center gap-3">
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => navigate('/admin/AdminProductsList')}
-                >
-                  📦 View All Products
-                </button>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={() => navigate('/admin/AdminCategoriesList')}
-                >
-                  📁 View All Categories
-                </button>
-              </div>
-            </div>
-          </div>
+      <div className="admin-nav-card mb-3 m-4">
+        <div className="admin-nav-buttons">
+          <button
+            className="admin-btn-secondary"
+            onClick={() => navigate("/admin/AdminProductsList")}
+          >
+            <FaBox className="me-2" />
+            View All Products
+          </button>
+          <button
+            className="admin-btn-secondary"
+            onClick={() => navigate("/admin/AdminCategoriesList")}
+          >
+            <FaFolder className="me-2" />
+            View All Categories
+          </button>
         </div>
       </div>
 
-      <h2 className="mb-4 text-center">
-        {isEditMode ? "✏️ Edit Product" : "Admin Product Management"}
+      <h2 className="admin-main-heading">
+        {isEditMode ? (
+          <>
+            <FaEdit className="me-2" />
+            Edit Product
+          </>
+        ) : (
+          "Admin Product Management"
+        )}
       </h2>
 
       {/* Category Management Section - Only show in create mode */}
       {!isEditMode && (
-        <div className="card mb-4">
-          <div className="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">📁 Category Management</h5>
-            <span className="badge bg-primary">{categories.length} categories</span>
+        <div className="admin-card category-management">
+          <div className="admin-card-header">
+            <h5 className="mb-0">
+              <FaFolder className="me-2" />
+              Category Management
+            </h5>
+            <span className="category-badge">
+              {categories.length} categories
+            </span>
           </div>
           <div className="card-body">
             {!showCategoryForm ? (
-              <button 
-                className="btn btn-outline-primary"
+              <button
+                className="admin-btn-outline m-2"
                 onClick={() => setShowCategoryForm(true)}
               >
-                + Add New Category
+                <FaPlus className="me-2" />
+                Add New Category
               </button>
             ) : (
-              <form onSubmit={handleCreateCategory} className="row g-3">
-                <div className="col-md-4">
-                  <label className="form-label fw-semibold">Category Name *</label>
+              <form
+                onSubmit={handleCreateCategory}
+                className="category-form-row m-3"
+              >
+                <div className="category-form-col ">
+                  <label className="form-label">Category Name *</label>
                   <input
                     type="text"
                     className="form-control"
@@ -326,9 +356,9 @@ const AdminProductPage: React.FC = () => {
                     required
                   />
                 </div>
-                
-                <div className="col-md-4">
-                  <label className="form-label fw-semibold">Parent Category</label>
+
+                <div className="category-form-col">
+                  <label className="form-label">Parent Category</label>
                   <select
                     className="form-select"
                     value={parentCategory}
@@ -342,49 +372,63 @@ const AdminProductPage: React.FC = () => {
                     ))}
                   </select>
                   <small className="text-muted">
-                    Select parent for subcategory, or leave empty for main category
+                    Select parent for subcategory, or leave empty for main
+                    category
                   </small>
                 </div>
-                
-                <div className="col-md-4 d-flex align-items-end gap-2">
-                  <button 
-                    type="submit" 
-                    className="btn btn-success"
+
+                <div className="category-form-actions">
+                  <button
+                    type="submit"
+                    className="admin-btn-success"
                     disabled={categoryLoading || !newCategoryName.trim()}
                   >
-                    {categoryLoading ? "Creating..." : "Create Category"}
+                    {categoryLoading ? (
+                      <FaSpinner className="spinner-border-sm me-2" />
+                    ) : (
+                      <FaSave className="me-2" />
+                    )}
+                    {categoryLoading ? "Creating..." : "Add Category"}
                   </button>
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-secondary"
+                  <button
+                    type="button"
+                    className="admin-btn-outline"
                     onClick={() => {
                       setShowCategoryForm(false);
                       setNewCategoryName("");
                       setParentCategory("");
                     }}
                   >
+                    <FaTimes className="me-2" />
                     Cancel
                   </button>
                 </div>
               </form>
             )}
-            
+
             {/* Categories Hierarchy Display */}
             {categories.length > 0 && (
               <div className="mt-4">
-                <h6 className="text-muted mb-2">Current Categories:</h6>
-                <div className="category-tree">
-                  {mainCategories.map(mainCat => (
+                <h6 className="text-muted mb-1 ms-2">Current Categories:</h6>
+                <div className="category-tree m-3">
+                  {mainCategories.map((mainCat) => (
                     <div key={mainCat._id} className="mb-2">
-                      <div className="fw-bold text-primary">📁 {mainCat.name}</div>
+                      <div className="fw-bold text-primary">
+                        <FaFolder className="me-2" />
+                        {mainCat.name}
+                      </div>
                       {categories
-                        .filter(subCat => subCat.parentCategory?.toString() === mainCat._id.toString())
-                        .map(subCat => (
+                        .filter(
+                          (subCat) =>
+                            subCat.parentCategory?.toString() ===
+                            mainCat._id.toString()
+                        )
+                        .map((subCat) => (
                           <div key={subCat._id} className="ms-3 text-success">
-                            └─ 📂 {subCat.name}
+                            <FaFolder className="me-2" />
+                            {subCat.name}
                           </div>
-                        ))
-                      }
+                        ))}
                     </div>
                   ))}
                 </div>
@@ -395,29 +439,39 @@ const AdminProductPage: React.FC = () => {
       )}
 
       {/* Product Creation/Edit Form */}
-      <form onSubmit={handleSubmit} className="p-4 bg-white rounded shadow-sm">
-        <h5 className="mb-3 border-bottom pb-2">
-          {isEditMode ? "✏️ Edit Product Details" : "🛍️ Add New Product"}
+      <form onSubmit={handleSubmit} className="admin-form">
+        <h5 className="form-section-heading">
+          {isEditMode ? (
+            <>
+              <FaEdit className="me-2" />
+              Edit Product Details
+            </>
+          ) : (
+            <>
+              <FaPlus className="me-2" />
+              Add New Product
+            </>
+          )}
         </h5>
-        
+
         {error && (
-          <div className="alert alert-danger d-flex align-items-center">
-            <span>❌</span>
-            <span className="ms-2">{error}</span>
+          <div className="alert alert-danger">
+            <FaTimes />
+            <span>{error}</span>
           </div>
         )}
         {success && (
-          <div className="alert alert-success d-flex align-items-center">
-            <span>✅</span>
-            <span className="ms-2">{success}</span>
+          <div className="alert alert-success">
+            <FaSave />
+            <span>{success}</span>
           </div>
         )}
 
-        <div className="row">
+        <div className="admin-row admin-col-2">
           {/* Basic Information */}
-          <div className="col-md-6">
+          <div>
             <div className="mb-3">
-              <label className="form-label fw-semibold">Product Title *</label>
+              <label className="form-label">Product Title *</label>
               <input
                 type="text"
                 className="form-control"
@@ -429,7 +483,7 @@ const AdminProductPage: React.FC = () => {
             </div>
 
             <div className="mb-3">
-              <label className="form-label fw-semibold">Description *</label>
+              <label className="form-label">Description *</label>
               <textarea
                 className="form-control"
                 rows={4}
@@ -443,7 +497,7 @@ const AdminProductPage: React.FC = () => {
             <div className="row">
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Price (₹) *</label>
+                  <label className="form-label">Price (₹) *</label>
                   <input
                     type="number"
                     className="form-control"
@@ -458,7 +512,7 @@ const AdminProductPage: React.FC = () => {
               </div>
               <div className="col-md-6">
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Stock Quantity *</label>
+                  <label className="form-label">Stock Quantity *</label>
                   <input
                     type="number"
                     className="form-control"
@@ -474,9 +528,9 @@ const AdminProductPage: React.FC = () => {
           </div>
 
           {/* Category & Media */}
-          <div className="col-md-6">
+          <div>
             <div className="mb-3">
-              <label className="form-label fw-semibold">Category *</label>
+              <label className="form-label">Category *</label>
               <select
                 className="form-select"
                 value={category}
@@ -484,7 +538,11 @@ const AdminProductPage: React.FC = () => {
                 required
                 disabled={categories.length === 0}
               >
-                <option value="">{categories.length === 0 ? "No categories available" : "Select a category"}</option>
+                <option value="">
+                  {categories.length === 0
+                    ? "No categories available"
+                    : "Select a category"}
+                </option>
                 {categoryOptions.map((opt) => (
                   <option key={opt.id} value={opt.id}>
                     {opt.label}
@@ -500,13 +558,15 @@ const AdminProductPage: React.FC = () => {
 
             {/* Featured Settings */}
             <div className="mb-3">
-              <label className="form-label fw-semibold">Featured Settings</label>
+              <label className="form-label">Featured Settings</label>
               <div className="row g-2">
                 <div className="col-md-6">
                   <select
                     className="form-select"
                     value={featuredType}
-                    onChange={(e) => setFeaturedType(e.target.value as FeaturedType)}
+                    onChange={(e) =>
+                      setFeaturedType(e.target.value as FeaturedType)
+                    }
                   >
                     <option value="null">Not Featured</option>
                     <option value="latest">Latest</option>
@@ -539,57 +599,54 @@ const AdminProductPage: React.FC = () => {
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
               />
-              <label className="form-check-label fw-semibold">
-                Product Active
-              </label>
+              <label className="form-check-label">Product Active</label>
             </div>
 
             {/* Image Section */}
             {isEditMode ? (
               <>
-                {/* EDIT MODE: Image info only (no update for now) */}
                 {/* EDIT MODE: Image update */}
-<div className="mb-3">
-  <label className="form-label fw-semibold">Update Images</label>
-  <input
-    type="file"
-    className="form-control"
-    accept="image/*"
-    multiple
-    onChange={handleImageChange}
-  />
-  <small className="text-muted">
-    Select new images to add to existing ones
-  </small>
-  {images.length > 0 && (
-    <div className="mt-2">
-      <button
-        type="button"
-        className="btn btn-success btn-sm"
-        onClick={handleUpdateImages}
-        disabled={loading}
-      >
-        {loading ? "Updating..." : "🖼️ Update Images"}
-      </button>
-      <small className="text-success ms-2">
-        {images.length} new image(s) selected
-      </small>
-    </div>
-  )}
-</div>
+                <div className="mb-3">
+                  <label className="form-label">Update Images</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                  />
+                  <small className="text-muted">
+                    Select new images to add to existing ones
+                  </small>
+                  {images.length > 0 && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        className="admin-btn-success admin-btn-sm"
+                        onClick={handleUpdateImages}
+                        disabled={loading}
+                      >
+                        <FaImage className="me-2" />
+                        {loading ? "Updating..." : "Update Images"}
+                      </button>
+                      <small className="text-success ms-2">
+                        {images.length} new image(s) selected
+                      </small>
+                    </div>
+                  )}
+                </div>
 
                 {/* Existing Images Display */}
                 {existingImages.length > 0 && (
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">Existing Images</label>
-                    <div className="d-flex flex-wrap gap-2">
+                    <label className="form-label">Existing Images</label>
+                    <div className="image-preview-container">
                       {existingImages.map((img, index) => (
                         <div key={index} className="position-relative">
-                          <img 
-                            src={img} 
+                          <img
+                            src={img}
                             alt={`Product ${index + 1}`}
-                            className="rounded"
-                            style={{ width: '60px', height: '60px', objectFit: 'cover' }}
+                            className="image-preview"
                           />
                         </div>
                       ))}
@@ -600,7 +657,7 @@ const AdminProductPage: React.FC = () => {
             ) : (
               /* CREATE MODE: Required image upload */
               <div className="mb-3">
-                <label className="form-label fw-semibold">Product Images *</label>
+                <label className="form-label">Product Images *</label>
                 <input
                   type="file"
                   className="form-control"
@@ -610,11 +667,13 @@ const AdminProductPage: React.FC = () => {
                   required
                 />
                 <small className="text-muted">
-                  You can select multiple images. First image will be the main display image.
+                  You can select multiple images. First image will be the main
+                  display image.
                 </small>
                 {images.length > 0 && (
                   <div className="mt-2">
                     <small className="text-success">
+                      <FaImage className="me-1" />
                       {images.length} image(s) selected
                     </small>
                   </div>
@@ -626,18 +685,26 @@ const AdminProductPage: React.FC = () => {
 
         {/* Submit Button */}
         <div className="mt-4">
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-lg w-100 py-3 fw-bold"
+          <button
+            type="submit"
+            className="admin-btn-primary"
             disabled={loading || categories.length === 0}
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" />
+                <FaSpinner className="spinner-border-sm me-2" />
                 {isEditMode ? "Updating Product..." : "Creating Product..."}
               </>
+            ) : isEditMode ? (
+              <>
+                <FaSave className="me-2" />
+                Update Product Details
+              </>
             ) : (
-              isEditMode ? "🔄 Update Product Details" : "🚀 Create Product"
+              <>
+                <FaPlus className="me-2" />
+                Create Product
+              </>
             )}
           </button>
           {categories.length === 0 && (

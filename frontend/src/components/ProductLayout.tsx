@@ -13,11 +13,11 @@ interface Props {
   isInWishlist?: boolean;
 }
 
-const ProductLayout: React.FC<Props> = ({ 
-  product, 
-  onAddToCart, 
-  onToggleWishlist, 
-  isInWishlist = false
+const ProductLayout: React.FC<Props> = ({
+  product,
+  onAddToCart,
+  onToggleWishlist,
+  isInWishlist = false,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
@@ -28,15 +28,17 @@ const ProductLayout: React.FC<Props> = ({
     return (
       <div className="product-card">
         <div className="product-image-container">
-          <img 
-            src="https://placehold.co/300x300?text=No+Product" 
+          <img
+            src="https://placehold.co/300x300?text=No+Product"
             alt="Product not available"
             className="product-image"
           />
         </div>
         <div className="product-details">
           <h3 className="product-title">Product not available</h3>
-          <p className="product-description">This product could not be loaded.</p>
+          <p className="product-description">
+            This product could not be loaded.
+          </p>
         </div>
       </div>
     );
@@ -58,8 +60,7 @@ const ProductLayout: React.FC<Props> = ({
 
     try {
       await onToggleWishlist(product._id);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleAddToCart = async () => {
@@ -71,19 +72,19 @@ const ProductLayout: React.FC<Props> = ({
 
     setAddingToCart(true);
     try {
-      await axiosInstance.post('/cart/add', {
+      await axiosInstance.post("/cart/add", {
         userId: user.id,
         productId: product._id,
-        quantity: 1
+        quantity: 1,
       });
 
-      alert('Product added to cart successfully!');
-      
+      alert("Product added to cart successfully!");
+
       if (onAddToCart) {
         onAddToCart(product);
       }
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to add product to cart');
+      alert(error.response?.data?.message || "Failed to add product to cart");
     } finally {
       setAddingToCart(false);
     }
@@ -98,26 +99,30 @@ const ProductLayout: React.FC<Props> = ({
   };
 
   const getCategoryName = () => {
-    if (!product.category) return '';
-    if (typeof product.category === 'object') {
+    if (!product.category) return "";
+    if (typeof product.category === "object") {
       const categoryObj = product.category as any;
-      return categoryObj.name || '';
+      return categoryObj.name || "";
     }
     return String(product.category);
   };
 
   return (
-    <div className="product-card" onClick={handleCardClick} style={{cursor: 'pointer'}}>
+    <div
+      className="product-card"
+      onClick={handleCardClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className="product-image-container">
-        <img 
-          src={imageUrl} 
+        <img
+          src={imageUrl}
           alt={product.title}
-          className={`product-image ${imageLoaded ? 'loaded' : 'loading'}`}
+          className={`product-image ${imageLoaded ? "loaded" : "loading"}`}
           onLoad={() => setImageLoaded(true)}
         />
-        
+
         <div className="product-actions-overlay">
-          <button 
+          <button
             className="action-btn quick-view-btn"
             onClick={(e) => {
               e.stopPropagation();
@@ -127,13 +132,21 @@ const ProductLayout: React.FC<Props> = ({
           >
             <FaEye />
           </button>
-          <button 
-            className={`action-btn wishlist-btn ${isInWishlist ? 'active' : ''}`}
+          <button
+            className={`action-btn wishlist-btn ${
+              isInWishlist ? "active" : ""
+            }`}
             onClick={(e) => {
               e.stopPropagation();
-              handleWishlistClick();
+              if (!user) {
+                alert("Please login to manage wishlist");
+                navigate("/login");
+              } else if (user.role === "admin") {
+                alert("Admins cannot add items to wishlist");
+              } else {
+                handleWishlistClick(); // Only for regular users
+              }
             }}
-            title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
           >
             {isInWishlist ? <FaHeart /> : <FaRegHeart />}
           </button>
@@ -142,42 +155,57 @@ const ProductLayout: React.FC<Props> = ({
 
       <div className="product-details">
         {product.category && (
-          <span className="product-category">
-            {getCategoryName()}
-          </span>
+          <span className="product-category">{getCategoryName()}</span>
         )}
-        
+
         <h3 className="product-title">{product.title}</h3>
-        
+
         <p className="product-description">
-          {product.description && product.description.length > 80 
-            ? `${product.description.substring(0, 80)}...` 
-            : product.description
-          }
+          {product.description && product.description.length > 80
+            ? `${product.description.substring(0, 80)}...`
+            : product.description}
         </p>
 
         <div className="product-price-section">
           <div className="price-container">
-            <span className="current-price">₹{product.price.toLocaleString()}</span>
+            <span className="current-price">
+              ₹{product.price.toLocaleString()}
+            </span>
           </div>
-          
+
           <div className="stock-status">
-            <span className={`stock-badge ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-              {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+            <span
+              className={`stock-badge ${
+                product.stock > 0 ? "in-stock" : "out-of-stock"
+              }`}
+            >
+              {product.stock > 0 ? "In Stock" : "Out of Stock"}
             </span>
           </div>
         </div>
 
-        <button 
+        <button
           className="add-to-cart-btn"
           onClick={(e) => {
             e.stopPropagation();
-            handleAddToCart();
+            if (!user) {
+              alert("Please login to add items to cart");
+              navigate("/login");
+            } else if (user.role === "admin") {
+              alert("Admins cannot add items to cart");
+            } else {
+              handleAddToCart(); // Only for regular users
+            }
           }}
-          disabled={product.stock === 0 || addingToCart}
         >
           <FaCartPlus className="cart-icon" />
-          {addingToCart ? 'Adding...' : (product.stock === 0 ? 'Out of Stock' : 'Add to Cart')}
+          {!user
+            ? "Login to Add"
+            : user.role === "admin"
+            ? "Admin View Only"
+            : addingToCart
+            ? "Adding..."
+            : "Add to Cart"}
         </button>
       </div>
     </div>

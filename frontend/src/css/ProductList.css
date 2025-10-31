@@ -1,29 +1,363 @@
-/* Custom styles for product listing */
-.filter-section {
+/* Product List Header - Improved Responsive */
+.product-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: auto;
+}
+
+.header-content {
+  flex: 1;
+  min-width: 200px;
+}
+
+.page-title {
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.product-count {
+  color: #6c757d;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
+/* Mobile Filter Toggle */
+.btn-filter-toggle {
   background: #f8f9fa;
-  border-radius: 10px;
-  padding: 1.5rem;
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
 }
 
-.filter-title {
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 1rem;
+.filter-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
 }
 
-.product-grid {
-  display: grid;
-  gap: 1.5rem;
+.filter-icon.active {
+  transform: rotate(90deg);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .filter-section {
-    margin-bottom: 1.5rem;
+/* Filters Section - Enhanced Mobile */
+.filters-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Mobile filters as dropdown */
+@media (max-width: 767.98px) {
+  .filters-section {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
   
-  .sort-filters {
-    flex-direction: column;
-    gap: 1rem;
+  .filters-section.show {
+    display: flex;
   }
+  
+  .filter-group {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+  }
+  
+  .filter-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  
+  .filter-select {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-label {
+  font-weight: 600;
+  margin-bottom: 0;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.filter-select {
+  border: 1px solid #dee2e6;
+  background-color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  min-width: 150px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+/* Buttons */
+.btn-clear-filters {
+  background: transparent;
+  border: 1px solid #6c757d;
+  color: #6c757d;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.btn-clear-filters:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Improved Grid for Small Mobile */
+@media (max-width: 575.98px) {
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  .row.g-2 {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+  
+  .col-6 {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  
+  .product-card {
+    border-radius: 12px;
+  }
+  
+  .product-image-container {
+    height: 180px;
+  }
+}
+
+/* Extra small devices (320px - 374px) */
+@media (max-width: 374.98px) {
+  .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .page-title {
+    font-size: 1.1rem;
+  }
+  
+  .product-count {
+    font-size: 0.8rem;
+  }
+}
+
+/* Pagination - Mobile Optimized */
+.pagination-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  gap: 10px;
+}
+
+.btn-pagination {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #007bff;
+  color: #007bff;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 575.98px) {
+  .btn-pagination {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .pagination-info {
+    font-size: 0.875rem;
+  }
+}
+
+/* Ensure cards don't get too small */
+.product-card {
+  min-height: 320px;
+}
+
+@media (max-width: 575.98px) {
+  .product-card {
+    min-height: 280px;
+  }
+}
+
+/* Improved Grid for Small Mobile */
+@media (max-width: 575.98px) {
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  .row.g-2 {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+  
+  .col-6 {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  
+  .product-card {
+    border-radius: 12px;
+  }
+  
+  .product-image-container {
+    height: 180px;
+  }
+}
+
+/* Extra small devices (420px and below) */
+@media (max-width: 420px) {
+  .col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .product-image-container {
+    height: 160px;
+  }
+  
+  .product-details {
+    padding: 12px;
+  }
+  
+  .product-title {
+    font-size: 1rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .product-description {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .current-price {
+    font-size: 1.1rem;
+  }
+  
+  .add-to-cart-btn {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Very small devices (380px and below) */
+@media (max-width: 380px) {
+  .product-image-container {
+    height: 150px;
+  }
+  
+  .product-details {
+    padding: 10px;
+  }
+  
+  .product-title {
+    font-size: 0.95rem;
+  }
+  
+  .current-price {
+    font-size: 1rem;
+  }
+  
+  .add-to-cart-btn {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Extra small devices (320px - 374px) */
+@media (max-width: 374.98px) {
+  .col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .page-title {
+    font-size: 1.1rem;
+  }
+  
+  .product-count {
+    font-size: 0.8rem;
+  }
+  
+  .product-image-container {
+    height: 140px;
+  }
+  
+  .product-details {
+    padding: 8px;
+  }
+  
+  .product-title {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  
+  .product-description {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+  }
+  
+  .current-price {
+    font-size: 0.95rem;
+  }
+  
+  .add-to-cart-btn {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    min-height: 32px;
+  }
+  
+  .action-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .header-content {
+  flex: 1;
+  min-width: 150px;
+}
+
+
 }

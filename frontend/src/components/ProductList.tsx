@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Row,
-  Col,
-  Spinner,
-  Form,
-  Button,
-  Card,
-  Container,
-} from "react-bootstrap";
 import ProductCard from "./ProductLayout";
 import type { Product } from "../types/Product";
 import axiosInstance from "../api/axiosInstance";
 import "../css/ProductList.css";
+import { FiFilter } from 'react-icons/fi';
 
 interface Props {
   category?: string;
@@ -25,6 +17,7 @@ const ProductList: React.FC<Props> = ({ category }) => {
   const [sortBy, setSortBy] = useState<string>("name");
   const [priceRange, setPriceRange] = useState<string>("all");
   const [categoryName, setCategoryName] = useState<string>("");
+  const [showFilters, setShowFilters] = useState(false); // Mobile filters toggle
   const limit = 12;
 
   const sortOptions = [
@@ -95,9 +88,11 @@ const ProductList: React.FC<Props> = ({ category }) => {
     setSortBy("name");
     setPriceRange("all");
     setPage(1);
+    setShowFilters(false);
   };
 
   const handleAddToCart = () => {
+    // Your add to cart logic
   };
 
   const handleToggleWishlist = async (productId: string) => {
@@ -132,123 +127,136 @@ const ProductList: React.FC<Props> = ({ category }) => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <Container className="my-4">
-      <Row className="mb-4">
-        <Col>
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <h1 className="h2 fw-bold text-dark mb-1">
+    <div className="container my-3 my-md-4">
+      {/* Header Section - Improved for mobile */}
+      <div className="row mb-3 mb-md-4">
+        <div className="col-12">
+          <div className="product-list-header">
+            <div className="header-content">
+              <h1 className="page-title">
                 {categoryName ? `${categoryName} Collection` : "All Products"}
               </h1>
-              <p className="text-muted mb-0">{total} products found</p>
+              <p className="product-count">{total} products found</p>
             </div>
-            <div className="d-flex gap-3">
-              <Form.Group controlId="sortSelect" className="mb-0">
-                <Form.Label className="fw-semibold me-2">Sort by:</Form.Label>
-                <Form.Select
+            
+            {/* Mobile Filter Toggle Button */}
+            <button
+              className="btn btn-filter-toggle d-md-none"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <span>Filters</span>
+              <i className={`filter-icon ${showFilters ? 'active' : ''}`}><FiFilter/></i>
+            </button>
+            
+            {/* Filters Section - Responsive */}
+            <div className={`filters-section ${showFilters ? 'show' : ''}`}>
+              <div className="filter-group">
+                <label className="filter-label">Sort by:</label>
+                <select 
                   value={sortBy}
                   onChange={handleSortChange}
-                  className="border-0 bg-light"
-                  style={{ minWidth: "180px" }}
+                  className="filter-select"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
-                </Form.Select>
-              </Form.Group>
+                </select>
+              </div>
 
-              <Form.Group controlId="priceRangeSelect" className="mb-0">
-                <Form.Label className="fw-semibold me-2">Price:</Form.Label>
-                <Form.Select
+              <div className="filter-group">
+                <label className="filter-label">Price:</label>
+                <select
                   value={priceRange}
                   onChange={handlePriceRangeChange}
-                  className="border-0 bg-light"
-                  style={{ minWidth: "180px" }}
+                  className="filter-select"
                 >
                   {priceRanges.map((range) => (
                     <option key={range.value} value={range.value}>
                       {range.label}
                     </option>
                   ))}
-                </Form.Select>
-              </Form.Group>
+                </select>
+              </div>
 
-              <Button
-                variant="outline-secondary"
+              <button
+                className="btn btn-clear-filters"
                 onClick={clearFilters}
-                className="border-0"
               >
                 Clear Filters
-              </Button>
+              </button>
             </div>
           </div>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
+      {/* Loading State */}
       {loading ? (
         <div className="text-center py-5">
-          <Spinner animation="border" variant="primary" className="mb-3" />
+          <div className="spinner-border text-primary mb-3" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
           <p className="text-muted">Loading products...</p>
         </div>
       ) : products.length === 0 ? (
-        <Card className="text-center py-5">
-          <Card.Body>
+        <div className="card text-center py-5">
+          <div className="card-body">
             <h4 className="text-muted mb-3">No products found</h4>
             <p className="text-muted mb-3">
               Try adjusting your filters or search terms
             </p>
-            <Button variant="primary" onClick={clearFilters}>
+            <button className="btn btn-primary" onClick={clearFilters}>
               Clear All Filters
-            </Button>
-          </Card.Body>
-        </Card>
+            </button>
+          </div>
+        </div>
       ) : (
         <>
-          <Row className="g-4">
+          {/* Products Grid - Improved responsive columns */}
+          <div className="row g-2 g-sm-3 g-md-4">
             {products.map((product) => (
-              <Col key={product._id} xl={3} lg={4} md={6} sm={6}>
+              <div key={product._id} className="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3">
                 <ProductCard
                   product={product}
                   onAddToCart={handleAddToCart}
                   onToggleWishlist={handleToggleWishlist}
                   isInWishlist={product.isInWishlist || false}
                 />
-              </Col>
+              </div>
             ))}
-          </Row>
+          </div>
 
+          {/* Pagination - Improved for mobile */}
           {totalPages > 1 && (
-            <div className="d-flex justify-content-center align-items-center mt-5">
-              <Button
-                variant="outline-primary"
+            <div className="pagination-section">
+              <button
+                className="btn btn-pagination"
                 disabled={page === 1}
                 onClick={() => setPage(page - 1)}
-                className="rounded-circle me-3"
-                style={{ width: "45px", height: "45px" }}
               >
                 ←
-              </Button>
+              </button>
 
-              <span className="mx-4 fw-semibold">
+              <span className="pagination-info d-none d-sm-inline">
                 Page <strong>{page}</strong> of <strong>{totalPages}</strong>
               </span>
+              <span className="pagination-info d-sm-none">
+                <strong>{page}</strong>/<strong>{totalPages}</strong>
+              </span>
 
-              <Button
-                variant="outline-primary"
+              <button
+                className="btn btn-pagination"
                 disabled={page === totalPages}
                 onClick={() => setPage(page + 1)}
-                className="rounded-circle ms-3"
-                style={{ width: "45px", height: "45px" }}
               >
                 →
-              </Button>
+              </button>
             </div>
           )}
         </>
       )}
-    </Container>
+    </div>
   );
 };
 

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
+import { FaBell, FaShoppingCart, FaUser, FaCog, FaSync, FaCheckDouble } from 'react-icons/fa';
+import '../../css/Adminnotification.css';
 
 interface Notification {
   _id: string;
@@ -69,10 +71,10 @@ const AdminNotifications: React.FC = () => {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'order': return '🛒';
-      case 'user': return '👤';
-      case 'system': return '⚙️';
-      default: return '🔔';
+      case 'order': return <FaShoppingCart className="text-primary" />;
+      case 'user': return <FaUser className="text-success" />;
+      case 'system': return <FaCog className="text-warning" />;
+      default: return <FaBell className="text-info" />;
     }
   };
 
@@ -97,23 +99,28 @@ const AdminNotifications: React.FC = () => {
 
   return (
     <div className="container my-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>
+      
+
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <h2 className="d-flex align-items-center gap-2 mb-0">
+          <FaBell className="text-primary" />
           Notifications 
           {unreadCount > 0 && (
-            <span className="badge bg-danger ms-2">{unreadCount}</span>
+            <span className="badge notification-badge ms-2">{unreadCount}</span>
           )}
         </h2>
-        <div>
+        <div className="d-flex flex-column flex-sm-row gap-2">
           {unreadCount > 0 && (
             <button 
               onClick={markAllAsRead} 
-              className="btn btn-outline-success me-2"
+              className="outline-btn d-flex align-items-center gap-2"
             >
+              <FaCheckDouble />
               Mark All as Read
             </button>
           )}
-          <button onClick={fetchNotifications} className="btn btn-outline-secondary">
+          <button onClick={fetchNotifications} className="gradient-btn d-flex align-items-center gap-2">
+            <FaSync />
             Refresh
           </button>
         </div>
@@ -121,9 +128,10 @@ const AdminNotifications: React.FC = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="card">
+      <div className="card notification-card">
         <div className="card-header bg-light">
-          <h5 className="mb-0">
+          <h5 className="mb-0 d-flex align-items-center gap-2">
+            <FaBell />
             All Notifications ({notifications.length})
             {unreadCount > 0 && (
               <span className="text-primary"> • {unreadCount} unread</span>
@@ -135,26 +143,26 @@ const AdminNotifications: React.FC = () => {
             {notifications.map((notification) => (
               <div
                 key={notification._id}
-                className={`list-group-item list-group-item-action ${
-                  !notification.read ? 'bg-light' : ''
+                className={`list-group-item notification-item ${
+                  !notification.read ? 'unread' : ''
                 }`}
                 style={{ cursor: 'pointer' }}
                 onClick={() => !notification.read && markAsRead(notification._id)}
               >
-                <div className="d-flex align-items-start">
-                  <span className="me-3 fs-5">
+                <div className="d-flex align-items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
                     {getNotificationIcon(notification.type)}
-                  </span>
+                  </div>
                   <div className="flex-grow-1">
-                    <div className="d-flex justify-content-between align-items-start">
-                      <h6 className={`mb-1 ${!notification.read ? 'fw-bold' : ''}`}>
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <h6 className={`mb-0 ${!notification.read ? 'fw-bold text-dark' : 'text-muted'}`}>
                         {notification.message}
                       </h6>
                       {!notification.read && (
                         <span className="badge bg-primary">New</span>
                       )}
                     </div>
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
                       <small className="text-muted">
                         User ID: {notification.userId.slice(-6)}
                       </small>
@@ -170,6 +178,7 @@ const AdminNotifications: React.FC = () => {
           
           {notifications.length === 0 && (
             <div className="text-center py-5">
+              <FaBell size={48} className="text-muted mb-3" />
               <h5>No notifications</h5>
               <p className="text-muted">
                 You're all caught up! Notifications will appear here.

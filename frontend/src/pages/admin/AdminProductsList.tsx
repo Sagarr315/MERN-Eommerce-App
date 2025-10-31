@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { 
+  FaBox, 
+  FaPlus, 
+  FaSync, 
+  FaEdit, 
+  FaTrash, 
+  FaImage,
+  FaCheckCircle,
+  FaTimesCircle
+} from 'react-icons/fa';
+
+import '../../css/AdminCategoriesList.css';
 
 interface Product {
   _id: string;
@@ -48,44 +60,52 @@ const AdminProductsList: React.FC = () => {
     }
   };
 
-  // ✅ REMOVED the separate handleEdit function since we use navigate directly
-
-  if (loading) return <div className="container text-center mt-5"><div className="spinner-border"></div></div>;
+  if (loading) return (
+    <div className="spinner-container">
+      <div className="spinner-border"></div>
+    </div>
+  );
 
   return (
-    <div className="container my-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>📦 All Products</h2>
-        <div>
+    <div className="categories-container  mt-4 m-4">
+      <div className="header-section">
+        <h2 className="header-title d-flex align-items-center gap-2">
+          <FaBox className="text-primary" />
+          All Products
+        </h2>
+        <div className="actions-section">
           <button 
             onClick={() => navigate('/admin/AdminProductPage')} 
-            className="btn btn-primary me-2"
+            className="gradient-btn d-flex align-items-center justify-content-center gap-2"
           >
-            ➕ Add New Product
+            <FaPlus />
+            <span className="d-none d-sm-inline">Add New Product</span>
+            <span className="d-sm-none">Add Product</span>
           </button>
-          <button onClick={fetchProducts} className="btn btn-outline-secondary">
-            🔄 Refresh
+          <button onClick={fetchProducts} className="refresh-btn d-flex align-items-center justify-content-center gap-2">
+            <FaSync />
+            <span className="d-none d-sm-inline">Refresh</span>
           </button>
         </div>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="card">
-        <div className="card-header bg-light">
-          <h5 className="mb-0">Products List ({products.length})</h5>
+      <div className="category-card">
+        <div className="card-header">
+          <h5 className="card-title mb-0">Products List ({products.length})</h5>
         </div>
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-striped table-hover mb-0">
-              <thead className="table-dark">
+              <thead>
                 <tr>
-                  <th>Image</th>
-                  <th>Product Name</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th className="text-nowrap">Image</th>
+                  <th className="text-nowrap">Product Name</th>
+                  <th className="text-nowrap">Price</th>
+                  <th className="text-nowrap">Stock</th>
+                  <th className="text-nowrap">Status</th>
+                  <th className="text-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,44 +117,71 @@ const AdminProductsList: React.FC = () => {
                           src={product.images[0]} 
                           alt={product.title}
                           className="rounded"
-                          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                          style={{ 
+                            width: '40px', 
+                            height: '40px', 
+                            objectFit: 'cover',
+                            minWidth: '40px'
+                          }}
                         />
                       ) : (
                         <div className="bg-secondary rounded d-flex align-items-center justify-content-center"
-                          style={{ width: '50px', height: '50px' }}>
-                          <span className="text-white">No Image</span>
+                          style={{ 
+                            width: '40px', 
+                            height: '40px',
+                            minWidth: '40px'
+                          }}>
+                          <FaImage className="text-white fs-6" />
                         </div>
                       )}
                     </td>
                     <td>
-                      <strong>{product.title}</strong>
-                      <br />
-                      <small className="text-muted">Category: {product.category?.name}</small>
+                      <div className="d-flex flex-column">
+                        <strong className="text-truncate" style={{ maxWidth: '150px' }}>
+                          {product.title}
+                        </strong>
+                        <small className="text-muted text-truncate" style={{ maxWidth: '150px' }}>
+                          Cat: {product.category?.name}
+                        </small>
+                      </div>
                     </td>
-                    <td>₹{product.price}</td>
+                    <td className="text-nowrap">
+                      <strong>₹{product.price}</strong>
+                    </td>
                     <td>
-                      <span className={`badge ${product.stock > 0 ? 'bg-success' : 'bg-danger'}`}>
+                      <span className={`badge ${product.stock > 0 ? 'badge-active' : 'badge-inactive'}`}>
                         {product.stock}
                       </span>
                     </td>
                     <td>
-                      <span className={`badge ${product.isActive ? 'bg-success' : 'bg-danger'}`}>
-                        {product.isActive ? 'Active' : 'Inactive'}
+                      <span className={`badge ${product.isActive ? 'badge-active' : 'badge-inactive'}`}>
+                        {product.isActive ? 
+                          <span className="d-flex align-items-center gap-1">
+                            <FaCheckCircle />
+                            <span className="d-none d-md-inline">Active</span>
+                          </span> : 
+                          <span className="d-flex align-items-center gap-1">
+                            <FaTimesCircle />
+                            <span className="d-none d-md-inline">Inactive</span>
+                          </span>
+                        }
                       </span>
                     </td>
                     <td>
-                      <div className="btn-group">
+                      <div className="action-buttons">
                         <button 
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => navigate(`/admin/AdminProductPage/${product._id}`)} // ✅ DIRECT NAVIGATION
+                          className="btn-activate d-flex align-items-center gap-1"
+                          onClick={() => navigate(`/admin/AdminProductPage/${product._id}`)}
                         >
-                          Edit
+                          <FaEdit />
+                          <span className="d-none d-lg-inline">Edit</span>
                         </button>
                         <button 
-                          className="btn btn-sm btn-outline-danger"
+                          className="btn-deactivate d-flex align-items-center gap-1"
                           onClick={() => handleDelete(product._id)}
                         >
-                          Delete
+                          <FaTrash />
+                          <span className="d-none d-lg-inline">Delete</span>
                         </button>
                       </div>
                     </td>
@@ -144,11 +191,11 @@ const AdminProductsList: React.FC = () => {
             </table>
           </div>
           {products.length === 0 && (
-            <div className="text-center py-5">
+            <div className="empty-state">
               <h5>No products found</h5>
               <button 
                 onClick={() => navigate('/admin/AdminProductPage')} 
-                className="btn btn-primary"
+                className="gradient-btn mt-2"
               >
                 Create First Product
               </button>

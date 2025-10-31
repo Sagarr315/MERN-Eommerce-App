@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
+import { FaSync, FaBox, FaShoppingBag } from 'react-icons/fa';
+import styles from '../../css/AdminOrdersList.module.css';
 
 interface OrderProduct {
   productId: {
@@ -70,17 +72,17 @@ const AdminOrdersList: React.FC = () => {
 
   const getStatusBadgeClass = (status: Order['status']) => {
     switch (status) {
-      case 'pending': return 'bg-warning';
-      case 'processing': return 'bg-info';
-      case 'shipped': return 'bg-primary';
-      case 'delivered': return 'bg-success';
-      case 'cancelled': return 'bg-danger';
-      default: return 'bg-secondary';
+      case 'pending': return `${styles.statusBadge} ${styles.badgePending}`;
+      case 'processing': return `${styles.statusBadge} ${styles.badgeProcessing}`;
+      case 'shipped': return `${styles.statusBadge} ${styles.badgeShipped}`;
+      case 'delivered': return `${styles.statusBadge} ${styles.badgeDelivered}`;
+      case 'cancelled': return `${styles.statusBadge} ${styles.badgeCancelled}`;
+      default: return styles.statusBadge;
     }
   };
 
   if (loading) return (
-    <div className="container text-center mt-5">
+    <div className={styles.spinnerContainer}>
       <div className="spinner-border text-primary" role="status">
         <span className="visually-hidden">Loading...</span>
       </div>
@@ -88,24 +90,30 @@ const AdminOrdersList: React.FC = () => {
   );
 
   return (
-    <div className="container my-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Orders Management</h2>
-        <button onClick={fetchOrders} className="btn btn-outline-secondary">
-          Refresh
-        </button>
+   <div className={`${styles.categoriesContainer} m-5`}>
+      <div className={styles.headerSection}>
+        <h2 className={styles.headerTitle}>
+          <FaShoppingBag className="text-primary me-2" />
+          Orders Management
+        </h2>
+        <div className={styles.actionsSection}>
+          <button onClick={fetchOrders} className={styles.refreshBtn}>
+            <FaSync className="me-2" />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="card">
-        <div className="card-header bg-light">
-          <h5 className="mb-0">All Orders ({orders.length})</h5>
+      <div className={styles.categoryCard}>
+        <div className={styles.cardHeader}>
+          <h5 className={styles.cardTitle}>All Orders ({orders.length})</h5>
         </div>
-        <div className="card-body p-0">
-          <div className="table-responsive">
-            <table className="table table-striped table-hover mb-0">
-              <thead className="table-dark">
+        <div className="card-body  m-3">
+          <div className={styles.tableResponsive}>
+            <table className={styles.table}>
+              <thead>
                 <tr>
                   <th>Order ID</th>
                   <th>Customer Details</th>
@@ -152,7 +160,7 @@ const AdminOrdersList: React.FC = () => {
                             ) : (
                               <div className="bg-secondary rounded me-2 d-flex align-items-center justify-content-center"
                                 style={{ width: '30px', height: '30px' }}>
-                                <span className="text-white small">📦</span>
+                                <FaBox className="text-white small" />
                               </div>
                             )}
                             <small>
@@ -197,7 +205,7 @@ const AdminOrdersList: React.FC = () => {
             </table>
           </div>
           {orders.length === 0 && (
-            <div className="text-center py-5">
+            <div className={styles.emptyState}>
               <h5>No orders found</h5>
               <p className="text-muted">Orders will appear here when customers place them.</p>
             </div>
@@ -208,4 +216,4 @@ const AdminOrdersList: React.FC = () => {
   );
 };
 
-export default AdminOrdersList;  
+export default AdminOrdersList;

@@ -5,7 +5,7 @@ import { BsStars } from "react-icons/bs";
 
 const Footer = () => {
   return (
-    <footer className="footer bg-white text-dark pt-5 border-top">
+    <footer className="footer bg-white text-dark pt-5 mt-3 border-top">
       <div className="container">
         {/* Top Section - Floating CTA & Social */}
 

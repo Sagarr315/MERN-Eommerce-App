@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import axiosInstance from '../api/axiosInstance';
-import type { Cart, CartItem } from '../types/Cart';
+import { AuthContext } from '../../context/AuthContext';
+import axiosInstance from '../../api/axiosInstance';
+import type { Cart, CartItem } from '../../types/Cart';
 
 interface Address {
   fullName: string;
