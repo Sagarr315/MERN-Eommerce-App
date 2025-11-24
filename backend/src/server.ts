@@ -11,6 +11,7 @@ import orderRoutes from "./routes/orderRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import notificationRoutes from "./routes/notificationRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import homeContentRoutes from "./routes/homeContentRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +32,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/home-content", homeContentRoutes); // FIXED: Added missing slash
 
 // Test route
 app.get("/", (req, res) => {

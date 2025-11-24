@@ -71,3 +71,16 @@ export const deactivateCategory = async (req: Request, res: Response) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// GET SINGLE CATEGORY BY ID
+export const getCategoryById = async (req: Request, res: Response) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    res.json(category);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};

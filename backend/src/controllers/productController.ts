@@ -61,7 +61,7 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const { category, search, page = '1', limit = '10', sort, priceRange } = req.query;
+    const { category, search, page = '1', limit = '10', sort, priceRange, featuredType } = req.query; // Add featuredType
 
     const query: any = {};
 
@@ -69,6 +69,16 @@ export const getProducts = async (req: Request, res: Response) => {
     const activeCategoryIds = await Category.find({ isActive: true }).distinct('_id');
     query.category = { $in: activeCategoryIds };
 
+    // ADD FEATURED TYPE FILTER
+    if (featuredType) {
+      query.featuredType = featuredType;
+      // Check if featuredUntil is still valid (if set)
+      query.$or = [
+        { featuredUntil: null },
+        { featuredUntil: { $gte: new Date() } }
+      ];
+    }
+    
     // Filter by category - handle main categories and subcategories
     if (category) {
       let categoryDoc;
