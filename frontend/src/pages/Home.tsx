@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "../api/axiosInstance";
 import type { Product } from "../types/Product";
 import "../css/Home.css";
+import { Link } from "react-router-dom"; // ADD THIS IMPORT
 
-// ... your existing sampleSlides and trending data ...
+// Components
+import HeroBanner from "../components/HeroBanner";
+import AdvertisementBanner from "../components/AdvertisementBanner";
+import HomeContentFetcher from "../components/HomeContentFetcher";
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<{
@@ -20,6 +24,9 @@ const Home = () => {
     sale: [],
     seasonal: []
   });
+
+  // Get banner data
+  const { heroContent, advertisements } = HomeContentFetcher();
 
   // Fetch featured products
   useEffect(() => {
@@ -48,16 +55,31 @@ const Home = () => {
     fetchFeaturedProducts();
   }, []);
 
+  // Get advertisement by position (only positions 1, 2, 3)
+  const getAdByPosition = (position: number) => {
+    return advertisements.find(ad => ad.position === position);
+  };
+
   return (
     <div className="home-container">
-      {/* Your existing hero section */}
-      <header className="container-fluid pt-5 position-relative">
-        {/* ... your existing hero carousel code ... */}
-      </header>
+      {/* 1. HERO BANNER */}
+      {heroContent && <HeroBanner content={heroContent} />}
 
-      {/* 🆕 FEATURED PRODUCTS SECTIONS */}
-      
-      {/* Latest Products - Horizontal Scroll */}
+      {/* 2. NEW ARRIVALS */}
+      {featuredProducts.new_arrival.length > 0 && (
+        <FeaturedSection 
+          title="New Arrivals"
+          subtitle="Just launched products"
+          products={featuredProducts.new_arrival}
+          type="new-arrival"
+          layout="grid"
+        />
+      )}
+
+      {/* 3. ADVERTISEMENT BANNER 1 */}
+      {getAdByPosition(1) && <AdvertisementBanner content={getAdByPosition(1)!} />}
+
+      {/* 4. LATEST COLLECTION */}
       {featuredProducts.latest.length > 0 && (
         <FeaturedSection 
           title="Latest Collection"
@@ -68,18 +90,7 @@ const Home = () => {
         />
       )}
 
-      {/* New Arrivals - Grid Layout */}
-      {featuredProducts.new_arrival.length > 0 && (
-        <FeaturedSection 
-          title="New Arrivals"
-          subtitle="Just launched products"
-          products={featuredProducts.new_arrival}
-          type="new_arrival"
-          layout="grid"
-        />
-      )}
-
-      {/* Trending Products - Sliding Cards */}
+      {/* 5. TRENDING NOW */}
       {featuredProducts.trending.length > 0 && (
         <FeaturedSection 
           title="Trending Now"
@@ -90,7 +101,10 @@ const Home = () => {
         />
       )}
 
-      {/* Sale Products - Highlighted */}
+      {/* 6. ADVERTISEMENT BANNER 2 */}
+      {getAdByPosition(2) && <AdvertisementBanner content={getAdByPosition(2)!} />}
+
+      {/* 7. SPECIAL OFFERS */}
       {featuredProducts.sale.length > 0 && (
         <FeaturedSection 
           title="Special Offers"
@@ -101,7 +115,7 @@ const Home = () => {
         />
       )}
 
-      {/* Seasonal Products */}
+      {/* 8. SEASONAL PICKS */}
       {featuredProducts.seasonal.length > 0 && (
         <FeaturedSection 
           title="Seasonal Picks"
@@ -112,23 +126,13 @@ const Home = () => {
         />
       )}
 
-      {/* Your existing sections */}
-      <section id="trending" className="container py-5">
-        {/* ... your existing trending section ... */}
-      </section>
-
-      <section id="categories" className="container py-5">
-        {/* ... your existing categories section ... */}
-      </section>
-
-      <section id="festival" className="container-fluid py-5" style={{ background: "#fff9f2" }}>
-        {/* ... your existing festival section ... */}
-      </section>
+      {/* 9. ADVERTISEMENT BANNER 3 */}
+      {getAdByPosition(3) && <AdvertisementBanner content={getAdByPosition(3)!} />}
     </div>
   );
 };
 
-// 🆕 Featured Section Component (keep the same as before)
+// FeaturedSection Component with clickable cards
 interface FeaturedSectionProps {
   title: string;
   subtitle: string;
@@ -192,12 +196,17 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
           <div className="products-scroll-container">
             <div className="products-scroll-track">
               {products.concat(products).map((product, index) => (
-                <ProductCard 
+                <Link 
                   key={`${product._id}-${index}`} 
-                  product={product} 
-                  badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
-                  animation="slide"
-                />
+                  to={`/${type}`} 
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <ProductCard 
+                    product={product} 
+                    badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
+                    animation="slide"
+                  />
+                </Link>
               ))}
             </div>
           </div>
@@ -207,11 +216,13 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
           <div className="row g-4 justify-content-center">
             {products.map((product) => (
               <div key={product._id} className="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-                <ProductCard 
-                  product={product} 
-                  badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
-                  animation="fade"
-                />
+                <Link to={`/${type}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <ProductCard 
+                    product={product} 
+                    badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
+                    animation="fade"
+                  />
+                </Link>
               </div>
             ))}
           </div>
@@ -225,11 +236,13 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
             >
               {products.map((product) => (
                 <div key={product._id} className="slider-item">
-                  <ProductCard 
-                    product={product} 
-                    badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
-                    animation="scale"
-                  />
+                  <Link to={`/${type}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <ProductCard 
+                      product={product} 
+                      badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
+                      animation="scale"
+                    />
+                  </Link>
                 </div>
               ))}
             </div>
@@ -250,12 +263,14 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
             <div className="row g-4 align-items-stretch">
               {products.map((product, index) => (
                 <div key={product._id} className={`col-lg-${index === 0 ? '6' : '3'} col-md-${index === 0 ? '6' : '3'} col-sm-6`}>
-                  <ProductCard 
-                    product={product} 
-                    badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
-                    featured={index === 0}
-                    animation="bounce"
-                  />
+                  <Link to={`/${type}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <ProductCard 
+                      product={product} 
+                      badge={{ color: getBadgeColor(type), text: getBadgeText(type) }}
+                      featured={index === 0}
+                      animation="bounce"
+                    />
+                  </Link>
                 </div>
               ))}
             </div>
@@ -266,7 +281,7 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
   );
 };
 
-// 🆕 Product Card Component (keep the same as before)
+// ProductCard Component (keep as is)
 interface ProductCardProps {
   product: Product;
   badge: { color: string; text: string };

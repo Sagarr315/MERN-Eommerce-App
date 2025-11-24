@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import "../../css/AdminNavbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "../../components/LogoutButton";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -11,6 +11,16 @@ const AdminNavbar = () => {
   const [showCategories, setShowCategories] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [mainCategories, setMainCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const navigate = useNavigate();
+
+  // Define which categories have dedicated pages
+  const dedicatedPages: { [key: string]: string } = {
+    'saree': '/sarees',
+    'kids': '/kids', 
+    'accessories': '/accessories'
+  };
 
   const fetchUnreadCount = async () => {
     try {
@@ -22,12 +32,43 @@ const AdminNavbar = () => {
     }
   };
 
+  const fetchMainCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const res = await axiosInstance.get("/categories");
+      // Filter only main categories (parentCategory is null)
+      const mainCats = res.data.filter((category: any) => !category.parentCategory && category.isActive);
+      setMainCategories(mainCats);
+    } catch (err) {
+      console.error("Failed to fetch categories");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  // Handle category click - navigate to appropriate page
+  const handleCategoryClick = (category: any) => {
+    const categoryNameLower = category.name.toLowerCase();
+    
+    // Check if category has a dedicated page
+    if (dedicatedPages[categoryNameLower]) {
+      navigate(dedicatedPages[categoryNameLower]);
+    } else {
+      // Use dynamic category page
+      navigate(`/category/${category._id}`);
+    }
+    
+    setShowCategories(false); // Close dropdown after click
+  };
+
   useEffect(() => {
     fetchUnreadCount();
+    fetchMainCategories();
     // Refresh every 30 seconds
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-white py-2 shadow-sm fixed-top">
@@ -62,28 +103,28 @@ const AdminNavbar = () => {
                     backgroundColor: "white",
                   }}
                 >
-                  <ul className="list-unstyled mb-0">
-                    <li>
-                      <i className="bi bi-bag me-2"></i>
-                      <strong>Fashion</strong>
-                      <p className="mb-0 text-muted">
-                        Trending designs to inspire you
-                      </p>
-                    </li>
-                    <li>
-                      <i className="bi bi-lightbulb me-2"></i>
-                      <strong>Electronics</strong>
-                      <p className="mb-0 text-muted">Up-and-coming designers</p>
-                    </li>
-                    <li>
-                      <i className="bi bi-display me-2"></i>
-                      <strong>Computer & Office</strong>
-                      <p className="mb-0 text-muted">
-                        Work designers are riffing on
-                      </p>
-                    </li>
-                    {/* items similarly */}
-                  </ul>
+                  {loadingCategories ? (
+                    <div className="text-center">Loading categories...</div>
+                  ) : (
+                    <ul className="list-unstyled mb-0">
+                      {mainCategories.map((category: any) => (
+                        <li 
+                          key={category._id} 
+                          className="mb-3 cursor-pointer"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleCategoryClick(category)}
+                        >
+                          <strong>{category.name}</strong>
+                          <p className="mb-0 text-muted">
+                            Explore our {category.name} collection
+                          </p>
+                        </li>
+                      ))}
+                      {mainCategories.length === 0 && (
+                        <li className="text-muted">No categories available</li>
+                      )}
+                    </ul>
+                  )}
                 </div>
               )}
             </div>
@@ -132,28 +173,28 @@ const AdminNavbar = () => {
                   backgroundColor: "white",
                 }}
               >
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <i className="bi bi-bag me-2"></i>
-                    <strong>Fashion</strong>
-                    <p className="mb-0 text-muted">
-                      Trending designs to inspire you
-                    </p>
-                  </li>
-                  <li>
-                    <i className="bi bi-lightbulb me-2"></i>
-                    <strong>Electronics</strong>
-                    <p className="mb-0 text-muted">Up-and-coming designers</p>
-                  </li>
-                  <li>
-                    <i className="bi bi-display me-2"></i>
-                    <strong>Computer & Office</strong>
-                    <p className="mb-0 text-muted">
-                      Work designers are riffing on
-                    </p>
-                  </li>
-                  {/* Add remaining items similarly */}
-                </ul>
+                {loadingCategories ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {mainCategories.map((category: any) => (
+                      <li 
+                        key={category._id} 
+                        className="mb-3 cursor-pointer"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <strong>{category.name}</strong>
+                        <p className="mb-0 text-muted">
+                          Explore our {category.name} collection
+                        </p>
+                      </li>
+                    ))}
+                    {mainCategories.length === 0 && (
+                      <li className="text-muted">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </div>
             )}
           </div>
@@ -164,14 +205,7 @@ const AdminNavbar = () => {
               className="fs-5 cursor-pointer"
               onClick={() => setShowSearch(true)}
             />
-            <Link to="/cart" className="text-decoration-none text-dark">
-              <div className="position-relative">
-                <FaShoppingCart className="fs-5" />
-                <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
-                  2
-                </span>
-              </div>
-            </Link>
+            
             {/* User Account Dropdown */}
             <div className="d-flex align-items-center position-relative">
               <div
@@ -211,7 +245,14 @@ const AdminNavbar = () => {
                         <i className="bi bi-plus-lg me-2"></i> Add Products
                       </li>
                     </Link>
-
+<Link
+                      to="/admin/AdminHomeContent"
+                      className="text-decoration-none text-dark"
+                    >
+                      <li className="mb-2 dropdown-item">
+                        <i className="bi bi-plus-lg me-2"></i> Add Home Content
+                      </li>
+                    </Link>
                     <Link
                       to="/admin/AdminOrdersList"
                       className="text-decoration-none text-dark"
@@ -282,28 +323,28 @@ const AdminNavbar = () => {
                   backgroundColor: "white",
                 }}
               >
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <i className="bi bi-bag me-2"></i>
-                    <strong>Fashion</strong>
-                    <p className="mb-0 text-muted">
-                      Trending designs to inspire you
-                    </p>
-                  </li>
-                  <li>
-                    <i className="bi bi-lightbulb me-2"></i>
-                    <strong>Electronics</strong>
-                    <p className="mb-0 text-muted">Up-and-coming designers</p>
-                  </li>
-                  <li>
-                    <i className="bi bi-display me-2"></i>
-                    <strong>Computer & Office</strong>
-                    <p className="mb-0 text-muted">
-                      Work designers are riffing on
-                    </p>
-                  </li>
-                  {/* Add remaining items similarly */}
-                </ul>
+                {loadingCategories ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {mainCategories.map((category: any) => (
+                      <li 
+                        key={category._id} 
+                        className="mb-3 cursor-pointer"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <strong>{category.name}</strong>
+                        <p className="mb-0 text-muted">
+                          Explore our {category.name} collection
+                        </p>
+                      </li>
+                    ))}
+                    {mainCategories.length === 0 && (
+                      <li className="text-muted">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </div>
             )}
           </div>

@@ -1,8 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import AdminNavbar from "../pages/admin/AdminNavbar";
 import UserNavbar from "../pages/user/UserNavbar";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import "../css/Navbar.css";
@@ -13,17 +12,23 @@ function Navbar() {
 
   const auth = useContext(AuthContext);
 
-  if (auth?.user?.role === "admin") {
+  // ⭐ Type safety: ensure context exists
+  if (!auth) return null;
+
+  const { user } = auth;
+
+  // ⭐ Role-based navbars
+  if (user?.role === "admin") {
     return <AdminNavbar />;
   }
 
-  if (auth?.user?.role === "user") {
+  if (user?.role === "user") {
     return <UserNavbar />;
   }
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-white py-2 shadow-sm fixed-top">
+      <nav className="navbar navbar-expand-lg bg-white py-2 shadow-sm sticky-top">
         <div className="container-fluid d-flex justify-content-between align-items-center px-3">
           {/* Left: Logo */}
           <div className="responsive-logo d-flex align-items-center">
@@ -79,6 +84,7 @@ function Navbar() {
                 </div>
               )}
             </div>
+
             <Link
               to="/discover"
               className="text-dark text-decoration-none fw-medium"
@@ -143,7 +149,6 @@ function Navbar() {
                       Work designers are riffing on
                     </p>
                   </li>
-                  {/* Add remaining items similarly */}
                 </ul>
               </div>
             )}

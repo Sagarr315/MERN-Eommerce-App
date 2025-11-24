@@ -28,6 +28,13 @@ import AdminRoute from "./components/AdminRoute";
 import AdminOrdersList from "./pages/admin/AdminOrdersList";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import UserRoute from "./components/UserRoute";
+import CategoryPage from "./pages/CategoryPage";
+import AdminHomeContent from "./pages/admin/AdminHomeContent";
+import LatestPage from "./pages/LatestPage";
+import NewArrivalPage from "./pages/NewArrivalPage";
+import TrendingPage from "./pages/TrendingPage";
+import SalePage from "./pages/SalePage";
+import SeasonalPage from "./pages/SeasonalPage";
 
 function App() {
   return (
@@ -170,6 +177,23 @@ function App() {
               </AdminRoute>
             }
           />
+
+          <Route
+            path="/admin/AdminHomeContent"
+            element={
+              <AdminRoute>
+                <AdminHomeContent />
+              </AdminRoute>
+            }
+          />
+
+          <Route path="/latest" element={<LatestPage />} />
+          <Route path="/new-arrival" element={<NewArrivalPage />} />
+          <Route path="/trending" element={<TrendingPage />} />
+          <Route path="/sale" element={<SalePage />} />
+          <Route path="/seasonal" element={<SeasonalPage />} />
+
+          <Route path="/category/:categoryId" element={<CategoryPage />} />
         </Routes>
         <Footer />
       </AuthProvider>

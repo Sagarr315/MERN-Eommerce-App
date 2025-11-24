@@ -121,7 +121,7 @@ export const Cart: React.FC<CartProps> = ({ onUpdateCart, onRemoveFromCart }) =>
         <p>Discover amazing products and fill it up!</p>
         <button 
           className={styles['btn-explore']}
-          onClick={() => navigate('/products')}
+          onClick={() => navigate('/discover')}
         >
           Start Shopping
         </button>

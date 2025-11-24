@@ -1,36 +1,41 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-const ProtectedRoute = ({ 
-  children, 
-  type = "auth" // "auth" for protected, "guest" for login/register
-}: { 
+interface ProtectedRouteProps {
   children: React.ReactElement;
-  type?: "auth" | "guest";
-}) => {
+  type?: "auth" | "guest"; // "auth" = protected pages, "guest" = login/register only
+}
+
+const ProtectedRoute = ({ children, type = "auth" }: ProtectedRouteProps) => {
   const auth = useContext(AuthContext);
   const location = useLocation();
-  const [isChecking, setIsChecking] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsChecking(false), 100);
-    return () => clearTimeout(timer);
-  }, [location]);
+  // Missing context (should never happen)
+  if (!auth) return null;
 
-  //  Show loading while checking authentication
-  if (isChecking) {
+  const { user, token, loading } = auth;
+
+  // ⭐ Prevent shaking / flicker: wait until auth loads
+  if (loading) {
     return <div className="spinner-border text-primary" />;
   }
 
-  //  GUEST ROUTES (login/register) - Redirect if already logged in
-  if (type === "guest" && auth?.token) {
-    return <Navigate to={auth.user?.role === "admin" ? "/admin" : "/user"} replace />;
+  // ⭐ Guest routes (Login/Register)
+  if (type === "guest" && token) {
+    const redirectTo = user?.role === "admin" ? "/admin" : "/user";
+    return <Navigate to={redirectTo} replace />;
   }
 
-  //  PROTECTED ROUTES - Redirect to login if not authenticated
-  if (type === "auth" && !auth?.token) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+  // ⭐ Protected routes (Admin/User pages)
+  if (type === "auth" && !token) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location }}
+      />
+    );
   }
 
   return children;

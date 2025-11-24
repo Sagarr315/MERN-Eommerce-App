@@ -1,14 +1,58 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
-import "../../css/UserNavbar.css"; // Import the CSS file for styling
+import "../../css/UserNavbar.css";
 import LogoutButton from "../../components/LogoutButton";
+import axiosInstance from "../../api/axiosInstance";
 
 const UserNavbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
+  const [mainCategories, setMainCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const navigate = useNavigate();
+
+  // Define which categories have dedicated pages
+  const dedicatedPages: { [key: string]: string } = {
+    'saree': '/sarees',
+    'kids': '/kids', 
+    'accessories': '/accessories'
+  };
+
+  const fetchMainCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const res = await axiosInstance.get("/categories");
+      // Filter only main categories (parentCategory is null)
+      const mainCats = res.data.filter((category: any) => !category.parentCategory && category.isActive);
+      setMainCategories(mainCats);
+    } catch (err) {
+      console.error("Failed to fetch categories");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  // Handle category click - navigate to appropriate page
+  const handleCategoryClick = (category: any) => {
+    const categoryNameLower = category.name.toLowerCase();
+    
+    // Check if category has a dedicated page
+    if (dedicatedPages[categoryNameLower]) {
+      navigate(dedicatedPages[categoryNameLower]);
+    } else {
+      // Use dynamic category page
+      navigate(`/category/${category._id}`);
+    }
+    
+    setShowCategories(false); // Close dropdown after click
+  };
+
+  useEffect(() => {
+    fetchMainCategories();
+  }, []);
 
   return (
     <>
@@ -44,28 +88,28 @@ const UserNavbar = () => {
                     backgroundColor: "white",
                   }}
                 >
-                  <ul className="list-unstyled mb-0">
-                    <li>
-                      <i className="bi bi-bag me-2"></i>
-                      <strong>Fashion</strong>
-                      <p className="mb-0 text-muted">
-                        Trending designs to inspire you
-                      </p>
-                    </li>
-                    <li>
-                      <i className="bi bi-lightbulb me-2"></i>
-                      <strong>Electronics</strong>
-                      <p className="mb-0 text-muted">Up-and-coming designers</p>
-                    </li>
-                    <li>
-                      <i className="bi bi-display me-2"></i>
-                      <strong>Computer & Office</strong>
-                      <p className="mb-0 text-muted">
-                        Work designers are riffing on
-                      </p>
-                    </li>
-                    {/* items similarly */}
-                  </ul>
+                  {loadingCategories ? (
+                    <div className="text-center">Loading categories...</div>
+                  ) : (
+                    <ul className="list-unstyled mb-0">
+                      {mainCategories.map((category: any) => (
+                        <li 
+                          key={category._id} 
+                          className="mb-3 cursor-pointer"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleCategoryClick(category)}
+                        >
+                          <strong>{category.name}</strong>
+                          <p className="mb-0 text-muted">
+                            Explore our {category.name} collection
+                          </p>
+                        </li>
+                      ))}
+                      {mainCategories.length === 0 && (
+                        <li className="text-muted">No categories available</li>
+                      )}
+                    </ul>
+                  )}
                 </div>
               )}
             </div>
@@ -114,28 +158,28 @@ const UserNavbar = () => {
                   backgroundColor: "white",
                 }}
               >
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <i className="bi bi-bag me-2"></i>
-                    <strong>Fashion</strong>
-                    <p className="mb-0 text-muted">
-                      Trending designs to inspire you
-                    </p>
-                  </li>
-                  <li>
-                    <i className="bi bi-lightbulb me-2"></i>
-                    <strong>Electronics</strong>
-                    <p className="mb-0 text-muted">Up-and-coming designers</p>
-                  </li>
-                  <li>
-                    <i className="bi bi-display me-2"></i>
-                    <strong>Computer & Office</strong>
-                    <p className="mb-0 text-muted">
-                      Work designers are riffing on
-                    </p>
-                  </li>
-                  {/* Add remaining items similarly */}
-                </ul>
+                {loadingCategories ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {mainCategories.map((category: any) => (
+                      <li 
+                        key={category._id} 
+                        className="mb-3 cursor-pointer"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <strong>{category.name}</strong>
+                        <p className="mb-0 text-muted">
+                          Explore our {category.name} collection
+                        </p>
+                      </li>
+                    ))}
+                    {mainCategories.length === 0 && (
+                      <li className="text-muted">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </div>
             )}
           </div>
@@ -248,28 +292,28 @@ const UserNavbar = () => {
                   backgroundColor: "white",
                 }}
               >
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <i className="bi bi-bag me-2"></i>
-                    <strong>Fashion</strong>
-                    <p className="mb-0 text-muted">
-                      Trending designs to inspire you
-                    </p>
-                  </li>
-                  <li>
-                    <i className="bi bi-lightbulb me-2"></i>
-                    <strong>Electronics</strong>
-                    <p className="mb-0 text-muted">Up-and-coming designers</p>
-                  </li>
-                  <li>
-                    <i className="bi bi-display me-2"></i>
-                    <strong>Computer & Office</strong>
-                    <p className="mb-0 text-muted">
-                      Work designers are riffing on
-                    </p>
-                  </li>
-                  {/* Add remaining items similarly */}
-                </ul>
+                {loadingCategories ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {mainCategories.map((category: any) => (
+                      <li 
+                        key={category._id} 
+                        className="mb-3 cursor-pointer"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <strong>{category.name}</strong>
+                        <p className="mb-0 text-muted">
+                          Explore our {category.name} collection
+                        </p>
+                      </li>
+                    ))}
+                    {mainCategories.length === 0 && (
+                      <li className="text-muted">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </div>
             )}
           </div>

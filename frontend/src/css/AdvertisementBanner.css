@@ -1,0 +1,132 @@
+.ad-banner {
+  padding: 3rem 0;
+  background: #f8f9fa;
+  margin: 2rem 0;
+}
+
+.ad-content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.ad-text {
+  flex: 1;
+}
+
+.ad-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.ad-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #111;
+}
+
+.ad-description {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.ad-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.ad-btn:hover {
+  transform: translateY(-2px);
+}
+
+.ad-media {
+  flex: 1;
+}
+
+.ad-media img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .ad-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+  
+  .ad-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ad-banner {
+    padding: 2rem 0;
+    margin: 1.5rem 0;
+  }
+  
+  .ad-title {
+    font-size: 1.8rem;
+  }
+  
+  .ad-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .ad-title {
+    font-size: 1.5rem;
+  }
+  
+  .ad-btn {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .ad-media img {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ad-title {
+    font-size: 1.3rem;
+  }
+  
+  .ad-subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .ad-banner {
+    padding: 1.5rem 0;
+  }
+  
+  .ad-title {
+    font-size: 1.2rem;
+  }
+  
+  .ad-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}

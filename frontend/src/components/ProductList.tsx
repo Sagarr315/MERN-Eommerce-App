@@ -5,11 +5,14 @@ import axiosInstance from "../api/axiosInstance";
 import "../css/ProductList.css";
 import { FiFilter } from 'react-icons/fi';
 
-interface Props {
+// Update the interface to include featuredType
+interface ProductListProps {
   category?: string;
+  featuredType?: string; // Add this
+  search?: string;
 }
 
-const ProductList: React.FC<Props> = ({ category }) => {
+const ProductList: React.FC<ProductListProps> = ({ category, featuredType, search }) => { // Add featuredType here
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -17,7 +20,7 @@ const ProductList: React.FC<Props> = ({ category }) => {
   const [sortBy, setSortBy] = useState<string>("name");
   const [priceRange, setPriceRange] = useState<string>("all");
   const [categoryName, setCategoryName] = useState<string>("");
-  const [showFilters, setShowFilters] = useState(false); // Mobile filters toggle
+  const [showFilters, setShowFilters] = useState(false);
   const limit = 12;
 
   const sortOptions = [
@@ -38,7 +41,7 @@ const ProductList: React.FC<Props> = ({ category }) => {
 
   useEffect(() => {
     fetchProducts();
-  }, [category, page, sortBy, priceRange]);
+  }, [category, featuredType, page, sortBy, priceRange]); // Add featuredType to dependencies
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -50,7 +53,9 @@ const ProductList: React.FC<Props> = ({ category }) => {
       };
 
       if (category) params.category = category;
+      if (featuredType) params.featuredType = featuredType; // Add this line
       if (priceRange !== "all") params.priceRange = priceRange;
+      if (search) params.search = search;
 
       const res = await axiosInstance.get("/products", { params });
 
@@ -60,8 +65,19 @@ const ProductList: React.FC<Props> = ({ category }) => {
       setProducts(productsData);
       setTotal(totalData);
 
+      // Update category name or featured type display
       if (category && productsData.length > 0 && productsData[0].category) {
         setCategoryName(productsData[0].category.name || "");
+      } else if (featuredType) {
+        // Set display name based on featured type
+        const featuredNames: { [key: string]: string } = {
+          'latest': 'Latest Collection',
+          'new_arrival': 'New Arrivals', 
+          'trending': 'Trending Now',
+          'sale': 'Special Offers',
+          'seasonal': 'Seasonal Picks'
+        };
+        setCategoryName(featuredNames[featuredType] || 'Featured Products');
       } else {
         setCategoryName("");
       }
@@ -134,7 +150,7 @@ const ProductList: React.FC<Props> = ({ category }) => {
           <div className="product-list-header">
             <div className="header-content">
               <h1 className="page-title">
-                {categoryName ? `${categoryName} Collection` : "All Products"}
+                {categoryName || "All Products"}
               </h1>
               <p className="product-count">{total} products found</p>
             </div>

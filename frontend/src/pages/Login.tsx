@@ -2,15 +2,30 @@ import "../css/Login.css";
 import { FcGoogle } from "react-icons/fc";
 import { BiSolidShoppingBags } from "react-icons/bi";
 import { FaCheckCircle } from "react-icons/fa";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { login } = useContext(AuthContext)!;
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  // ⭐ Type safety: if context missing
+  if (!auth) return null;
+
+  const { login, token, user, loading: authLoading } = auth;
+
+  // ⭐ auto redirect if logged-in user tries to open /login
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (token && user) {
+      if (user.role === "admin") navigate("/admin");
+      else navigate("/user");
+    }
+  }, [token, user, authLoading, navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,31 +34,23 @@ const Login = () => {
     const identifier = String(formData.get("emailOrPhone") || "");
     const password = String(formData.get("password") || "");
 
-    // Build payload dynamically
-    let data: Record<string, string> = { password };
-    if (identifier.includes("@")) {
-      data.email = identifier;
-    } else {
-      data.phone = identifier;
-    }
+    // Build payload
+    const data: Record<string, string> = { password };
+    if (identifier.includes("@")) data.email = identifier;
+    else data.phone = identifier;
 
     try {
       setLoading(true);
+
       const response = await axiosInstance.post("/auth/login", data);
       const result = response.data;
 
-   
-
       if (result.token && result.user) {
-        // Save using AuthContext
         login(result.token, result.user);
 
         // Redirect based on role
-        if (result.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
+        if (result.user.role === "admin") navigate("/admin");
+        else navigate("/user");
       } else {
         alert("Invalid login details!");
       }
@@ -56,8 +63,9 @@ const Login = () => {
   };
 
   return (
-    <section className="login-section min-vh-100 d-flex align-items-center">
-      <div className="d-flex w-100 min-vh-100 flex-column flex-md-row p-5 bg-light">
+    <section className="login-section min-vh-100 d-flex align-items-center overflow-hidden">
+      <div className="d-flex w-100 flex-column flex-md-row p-5 bg-light">
+        
         {/* LEFT SIDE */}
         <div className="left-side d-none d-md-flex flex-column justify-content-between m-4 w-50">
           <div>
@@ -191,32 +199,23 @@ const Login = () => {
                 </div>
 
                 <div className="d-flex justify-content-end mb-4">
-                  <a
-                    href="/forgot"
-                    className="small text-primary text-decoration-none"
-                  >
+                  <a href="/forgot" className="small text-primary text-decoration-none">
                     Forgot password?
                   </a>
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100"
-                  disabled={loading}
-                >
+                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
                   {loading ? "Signing in..." : "Sign in"}
                 </button>
 
-                <p
-                  className="text-center mt-4 mb-0 small text-muted"
-                  style={{ fontFamily: "Inter, sans-serif" }}
-                >
+                <p className="text-center mt-4 mb-0 small text-muted" style={{ fontFamily: "Inter, sans-serif" }}>
                   Don’t have an account yet?{" "}
                   <a href="/register" className="text-primary fw-semibold">
                     Sign up
                   </a>
                 </p>
               </form>
+
             </div>
           </div>
         </div>
