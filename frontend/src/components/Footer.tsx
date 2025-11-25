@@ -8,7 +8,6 @@ const Footer = () => {
     <footer className="footer bg-white text-dark pt-5 mt-3 border-top">
       <div className="container">
         {/* Top Section - Floating CTA & Social */}
-
         <div className="row align-items-center justify-content-between pb-4 border-bottom">
           {/* Left Text */}
           <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
@@ -23,18 +22,30 @@ const Footer = () => {
           {/* Right Social Icons */}
           <div className="col-md-6 text-center text-md-end">
             <div className="d-flex justify-content-center justify-content-md-end gap-3">
-              <Link to="/instagram" className="text-dark fs-5">
+              <a
+                href="https://instagram.com"
+                className="text-dark fs-5"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="bi bi-instagram"></i>
-              </Link>
-              <Link to="/facebook" className="text-dark fs-5">
+              </a>
+              <a
+                href="https://facebook.com"
+                className="text-dark fs-5"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="bi bi-facebook"></i>
-              </Link>
-              <Link to="/twitter" className="text-dark fs-5">
+              </a>
+              <a
+                href="https://twitter.com"
+                className="text-dark fs-5"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <i className="bi bi-twitter-x"></i>
-              </Link>
-              <Link to="/linkedin" className="text-dark fs-5">
-                <i className="bi bi-linkedin"></i>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -53,13 +64,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/women" className="text-decoration-none text-muted">
-                  Women
-                </Link>
-              </li>
-              <li>
-                <Link to="/men" className="text-decoration-none text-muted">
-                  Men
+                <Link to="/sarees" className="text-decoration-none text-muted">
+                  Sarees
                 </Link>
               </li>
               <li>
@@ -68,74 +74,52 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/sale" className="text-decoration-none text-muted">
-                  Sale
+                <Link
+                  to="/accessories"
+                  className="text-decoration-none text-muted"
+                >
+                  Accessories
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/discover"
+                  className="text-decoration-none text-muted"
+                >
+                  Discover All
                 </Link>
               </li>
             </ul>
           </div>
+
           <div className="col-6 col-md-3">
             <h6 className="fw-bold mb-3">Customer Care</h6>
             <ul className="list-unstyled">
               <li>
-                <Link to="#" className="text-decoration-none text-muted">
+                <Link to="/contact" className="text-decoration-none text-muted">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  FAQs
+                <Link to="/about" className="text-decoration-none text-muted">
+                  About
                 </Link>
               </li>
               <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Shipping & Returns
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Size Guide
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Track Order
+                <Link to="/terms" className="text-decoration-none text-muted">
+                  Terms
                 </Link>
               </li>
             </ul>
           </div>
-          <div className="col-6 col-md-3">
-            <h6 className="fw-bold mb-3">About Us</h6>
-            <ul className="list-unstyled">
-              <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Our Story
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Sustainability
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-decoration-none text-muted">
-                  Press
-                </Link>
-              </li>
-            </ul>
-          </div>
+
           <div className="col-12 col-md-3">
-            <h6 className="fw-bold mb-3">Join the Club </h6>
+            <h6 className="fw-bold mb-3">Join the Club</h6>
             <p className="text-muted small mb-2">
               Get exclusive deals, early access to sales, and fashion updates.
             </p>
             <Link
-              to="/explore"
+              to="/discover"
               className="btn btn-outline-secondary btn-sm rounded-pill px-3 custom-footer-btn"
             >
               Explore Now
@@ -159,10 +143,10 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="text-center py-3 small text-muted">
-          © {new Date().getFullYear()} <strong>Samruddhi</strong> — All rights
+          © {new Date().getFullYear()} <strong>Sagar</strong> — All rights
           reserved.
           <br />
-          <span className="fw-light">Designed with ❤️ by the Sagar Bhor.</span>
+          <span className="fw-light">Designed with ❤️ by Sagar Bhor.</span>
         </div>
       </div>
     </footer>

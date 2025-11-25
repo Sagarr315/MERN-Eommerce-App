@@ -18,7 +18,7 @@ const Accessories: React.FC = () => {
       try {
         const mainCategoryRes = await axiosInstance.get('/categories');
         const accessoriesCategory = mainCategoryRes.data.find((cat: any) => 
-          cat.name.toLowerCase().includes('accessory')
+          cat.name.toLowerCase().includes('aceessories')
         );
 
         if (accessoriesCategory) {
@@ -81,7 +81,7 @@ const Accessories: React.FC = () => {
         </Col>
       </Row>
 
-      <ProductList category={selectedSubCategory || "accessories"} />
+      <ProductList category={selectedSubCategory || "aceessories"} />
     </Container>
   );
 };

@@ -1,89 +1,227 @@
-@media (min-width: 575px) and (max-width: 600px) {
-  /* Target the center categories button container */
-  .d-none.d-sm-flex.d-lg-none {
-    gap: 0.5rem !important; /* adjust spacing if needed */
-    justify-content: center; /* optional: center it horizontally */
-  }
-
-  .d-none.d-sm-flex.d-lg-none .btn {
-    padding: 0.35rem 0.8rem !important; /* adjust button padding */
-    font-size: 0.85rem !important;       /* adjust button text size */
-  }
+/* Search Overlay */
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  display: none;
 }
 
-/* Default button size (desktop/tablet) */
-.auth-buttons a.btn {
-  padding: 0.5rem 1.5rem; /* desktop padding */
-  font-size: 1rem;        /* desktop font size */
-  transition: all 0.3s ease;
+.search-overlay.active {
+  display: block;
 }
 
-/* Default gap between buttons */
-.auth-buttons {
+.search-container {
+  background: white;
+  margin: 80px auto 0;
+  max-width: 600px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.search-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-input-group {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 1rem; /* matches Bootstrap gap-3 */
+  gap: 10px;
 }
 
-/* Responsive: below 430px */
-@media (max-width: 430px) {
-  .auth-buttons a.btn {
-    padding: 0.3rem 0.8rem !important; /* smaller padding */
-    font-size: 0.85rem !important;     /* smaller font */
-  }
-
-  .auth-buttons {
-    gap: 0.5rem !important; /* smaller spacing between buttons */
-  }
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
-/* Extra small screens: below 355px */
-@media (max-width: 355px) {
-  .auth-buttons a.btn {
-    padding: 0.25rem 0.6rem !important; /* even smaller padding */
-    font-size: 0.75rem !important;      /* even smaller font */
-  }
-
-  .auth-buttons {
-    gap: 0.25rem !important; /* minimal spacing */
-  }
+.search-input:focus {
+  border-color: #667eea;
 }
 
-/* ----------------------------
-   Auth Icons (Search / Cart)
------------------------------ */
-
-/* Default icon size */
-.auth-icons .fs-5 {
-  font-size: 1.25rem; /* default size */
-  transition: all 0.3s ease;
+.search-spinner {
+  animation: spin 1s linear infinite;
+  color: #667eea;
 }
 
-/* Default gap between icons */
-.auth-icons {
+.search-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.search-close:hover {
+  background: #f5f5f5;
+}
+
+.search-results {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.search-loading {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.search-loading .spinner {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+.search-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.search-results-header h6 {
+  margin: 0;
+  color: #333;
+}
+
+.view-all-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.search-results-list {
+  padding: 10px 0;
+}
+
+.search-result-item {
   display: flex;
   align-items: center;
-  gap: 1rem; /* default spacing similar to gap-3 */
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-bottom: 1px solid #f5f5f5;
 }
 
-/* Responsive: below 430px */
-@media (max-width: 430px) {
-  .auth-icons .fs-5 {
-    font-size: 1.1rem !important; /* slightly smaller icons */
-  }
+.search-result-item:hover {
+  background: #f8f9fa;
+}
 
-  .auth-icons {
-    gap: 0.5rem !important; /* smaller spacing */
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 12px;
+}
+
+.search-result-info {
+  flex: 1;
+}
+
+.search-result-title {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.search-result-price {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.search-result-category {
+  color: #666;
+  font-size: 12px;
+}
+
+.search-no-results {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.search-suggestions {
+  padding: 20px;
+}
+
+.search-suggestions h6 {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.suggestion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestion-tag {
+  background: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.suggestion-tag:hover {
+  background: #667eea;
+  color: white;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Search */
+@media (max-width: 768px) {
+  .search-container {
+    margin: 60px 20px 0;
+    max-width: none;
+  }
+  
+  .search-input {
+    font-size: 16px; /* Prevents zoom on iOS */
   }
 }
 
-/* Extra small screens: below 355px */
-@media (max-width: 355px) {
-  .auth-icons .fs-5 {
-    font-size: 0.95rem !important; /* even smaller icons */
+@media (max-width: 480px) {
+  .search-container {
+    margin: 50px 10px 0;
   }
-
-  .auth-icons {
-    gap: 0.25rem !important; /* minimal spacing */
+  
+  .search-header {
+    padding: 15px;
+  }
+  
+  .search-result-item {
+    padding: 10px 15px;
   }
 }

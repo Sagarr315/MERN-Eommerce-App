@@ -1,23 +1,106 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import AdminNavbar from "../pages/admin/AdminNavbar";
 import UserNavbar from "../pages/user/UserNavbar";
-import { Link } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaSearch, FaSpinner, FaTimes } from "react-icons/fa";
 import "../css/Navbar.css";
+import axiosInstance from "../api/axiosInstance";
 
 function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [mainCategories, setMainCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const navigate = useNavigate();
 
   const auth = useContext(AuthContext);
 
-  // ⭐ Type safety: ensure context exists
+  // Define which categories have dedicated pages
+  const dedicatedPages: { [key: string]: string } = {
+    saree: "/sarees",
+    kids: "/kids",
+    accessories: "/accessories",
+  };
+
+  const fetchMainCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const res = await axiosInstance.get("/categories");
+      const mainCats = res.data.filter(
+        (category: any) => !category.parentCategory && category.isActive
+      );
+      setMainCategories(mainCats);
+    } catch (err) {
+      console.error("Failed to fetch categories");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  // Handle category click
+  const handleCategoryClick = (category: any) => {
+    const categoryNameLower = category.name.toLowerCase();
+    if (dedicatedPages[categoryNameLower]) {
+      navigate(dedicatedPages[categoryNameLower]);
+    } else {
+      navigate(`/category/${category._id}`);
+    }
+    setShowCategories(false);
+  };
+
+  // Search products
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const response = await axiosInstance.get(
+        `/products?search=${encodeURIComponent(query)}&limit=8`
+      );
+      setSearchResults(response.data.products || []);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery) {
+        handleSearch(searchQuery);
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleProductClick = (productId: string) => {
+    navigate(`/products/${productId}`);
+    setShowSearch(false);
+    setSearchQuery("");
+    setSearchResults([]);
+  };
+
+  useEffect(() => {
+    fetchMainCategories();
+  }, []);
+
   if (!auth) return null;
 
   const { user } = auth;
 
-  // ⭐ Role-based navbars
   if (user?.role === "admin") {
     return <AdminNavbar />;
   }
@@ -37,7 +120,7 @@ function Navbar() {
               className="navbar-brand fw-bold d-flex align-items-center"
             >
               <img src="/letter-s.png" alt="logo" className="logo-img" />
-              <span className="logo-text">amruddhi</span>
+              <span className="logo-text">aGaR</span>
             </Link>
           </div>
 
@@ -52,35 +135,28 @@ function Navbar() {
               </button>
 
               {showCategories && (
-                <div
-                  className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 start-0 mt-2"
-                  style={{
-                    width: "320px",
-                    zIndex: 1050,
-                    backgroundColor: "white",
-                  }}
-                >
-                  <ul className="list-unstyled mb-0">
-                    <li>
-                      <i className="bi bi-bag me-2"></i>
-                      <strong>Fashion</strong>
-                      <p className="mb-0 text-muted">
-                        Trending designs to inspire you
-                      </p>
-                    </li>
-                    <li>
-                      <i className="bi bi-lightbulb me-2"></i>
-                      <strong>Electronics</strong>
-                      <p className="mb-0 text-muted">Up-and-coming designers</p>
-                    </li>
-                    <li>
-                      <i className="bi bi-display me-2"></i>
-                      <strong>Computer & Office</strong>
-                      <p className="mb-0 text-muted">
-                        Work designers are riffing on
-                      </p>
-                    </li>
-                  </ul>
+                <div className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 start-0 mt-2">
+                  {loadingCategories ? (
+                    <div className="text-center">Loading categories...</div>
+                  ) : (
+                    <ul className="list-unstyled mb-0">
+                      {mainCategories.map((category: any) => (
+                        <li
+                          key={category._id}
+                          className="mb-3 cursor-pointer"
+                          onClick={() => handleCategoryClick(category)}
+                        >
+                          <strong>{category.name}</strong>
+                          <p className="mb-0 text-muted">
+                            Explore our {category.name} collection
+                          </p>
+                        </li>
+                      ))}
+                      {mainCategories.length === 0 && (
+                        <li className="text-muted">No categories available</li>
+                      )}
+                    </ul>
+                  )}
                 </div>
               )}
             </div>
@@ -121,35 +197,28 @@ function Navbar() {
             </button>
 
             {showCategories && (
-              <div
-                className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 start-0 mt-2"
-                style={{
-                  width: "320px",
-                  zIndex: 1050,
-                  backgroundColor: "white",
-                }}
-              >
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <i className="bi bi-bag me-2"></i>
-                    <strong>Fashion</strong>
-                    <p className="mb-0 text-muted">
-                      Trending designs to inspire you
-                    </p>
-                  </li>
-                  <li>
-                    <i className="bi bi-lightbulb me-2"></i>
-                    <strong>Electronics</strong>
-                    <p className="mb-0 text-muted">Up-and-coming designers</p>
-                  </li>
-                  <li>
-                    <i className="bi bi-display me-2"></i>
-                    <strong>Computer & Office</strong>
-                    <p className="mb-0 text-muted">
-                      Work designers are riffing on
-                    </p>
-                  </li>
-                </ul>
+              <div className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 start-0 mt-2">
+                {loadingCategories ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {mainCategories.map((category: any) => (
+                      <li
+                        key={category._id}
+                        className="mb-3 cursor-pointer"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <strong>{category.name}</strong>
+                        <p className="mb-0 text-muted">
+                          Explore our {category.name} collection
+                        </p>
+                      </li>
+                    ))}
+                    {mainCategories.length === 0 && (
+                      <li className="text-muted">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </div>
             )}
           </div>
@@ -190,35 +259,28 @@ function Navbar() {
             </button>
 
             {showCategories && (
-              <div
-                className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 start-0 end-0 mt-1"
-                style={{
-                  width: "290px",
-                  zIndex: 1050,
-                  backgroundColor: "white",
-                }}
-              >
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <i className="bi bi-bag me-2"></i>
-                    <strong>Fashion</strong>
-                    <p className="mb-0 text-muted">
-                      Trending designs to inspire you
-                    </p>
-                  </li>
-                  <li>
-                    <i className="bi bi-lightbulb me-2"></i>
-                    <strong>Electronics</strong>
-                    <p className="mb-0 text-muted">Up-and-coming designers</p>
-                  </li>
-                  <li>
-                    <i className="bi bi-display me-2"></i>
-                    <strong>Computer & Office</strong>
-                    <p className="mb-0 text-muted">
-                      Work designers are riffing on
-                    </p>
-                  </li>
-                </ul>
+              <div className="dropdown-menu-custom shadow rounded p-3 position-absolute top-100 start-0 end-0 mt-1">
+                {loadingCategories ? (
+                  <div className="text-center">Loading categories...</div>
+                ) : (
+                  <ul className="list-unstyled mb-0">
+                    {mainCategories.map((category: any) => (
+                      <li
+                        key={category._id}
+                        className="mb-3 cursor-pointer"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <strong>{category.name}</strong>
+                        <p className="mb-0 text-muted">
+                          Explore our {category.name} collection
+                        </p>
+                      </li>
+                    ))}
+                    {mainCategories.length === 0 && (
+                      <li className="text-muted">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </div>
             )}
           </div>
@@ -227,35 +289,109 @@ function Navbar() {
 
       {/* Search Overlay */}
       {showSearch && (
-        <div className="mobile search-overlay">
-          <div className="search-box bg-white p-4 rounded shadow-lg">
-            <div className="d-flex align-items-center mb-3">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search in all categories..."
-              />
-              <button className="btn btn-primary ms-2">Search</button>
-              <button
-                className="btn btn-light ms-2"
-                onClick={() => setShowSearch(false)}
-              >
-                ✕
-              </button>
+        <div className="search-overlay active">
+          <div className="search-container">
+            <div className="search-header">
+              <div className="search-input-group">
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Search products and categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                {searchLoading && <FaSpinner className="search-spinner" />}
+                <button
+                  className="search-close"
+                  onClick={() => setShowSearch(false)}
+                >
+                  <FaTimes />
+                </button>
+              </div>
             </div>
 
-            <div>
-              <h6>Suggested results</h6>
-              <ul className="list-unstyled">
-                <li>Apple iMac 2024 (All-in-One PC)</li>
-                <li>Samsung Galaxy S24 Ultra (1Tb, Titanium Violet)</li>
-                <li>MacBook Pro 14-inch M3 - Space Gray</li>
-              </ul>
-              <h6>History</h6>
-              <ul className="list-unstyled">
-                <li>Microsoft - Surface Laptop, 256 GB SSD</li>
-                <li>Huawei - P40 Lite - Smartphone 128GB</li>
-              </ul>
+            <div className="search-results">
+              {searchQuery && (
+                <>
+                  {searchLoading ? (
+                    <div className="search-loading">
+                      <FaSpinner className="spinner" />
+                      <span>Searching...</span>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <>
+                      <div className="search-results-header">
+                        <h6>Search Results ({searchResults.length})</h6>
+                      </div>
+                      <div className="search-results-list">
+                        {searchResults.map((product) => (
+                          <div
+                            key={product._id}
+                            className="search-result-item"
+                            onClick={() => handleProductClick(product._id)}
+                          >
+                            <img
+                              src={
+                                product.images?.[0] || "/images/placeholder.jpg"
+                              }
+                              alt={product.title}
+                              className="search-result-image"
+                            />
+                            <div className="search-result-info">
+                              <div className="search-result-title">
+                                {product.title}
+                              </div>
+                              <div className="search-result-price">
+                                ₹{product.price?.toLocaleString()}
+                              </div>
+                              <div className="search-result-category">
+                                {product.category?.name}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="search-no-results">
+                      No products found for "{searchQuery}"
+                    </div>
+                  )}
+                </>
+              )}
+
+              {!searchQuery && (
+                <div className="search-suggestions">
+                  <h6>Popular Searches</h6>
+                  <div className="suggestion-tags">
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("saree")}
+                    >
+                      Saree
+                    </span>
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("kids")}
+                    >
+                      Kids Wear
+                    </span>
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("accessories")}
+                    >
+                      Accessories
+                    </span>
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("dress")}
+                    >
+                      Dress
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

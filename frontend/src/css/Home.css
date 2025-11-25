@@ -27,6 +27,36 @@
 .featured-highlight {
   background: #fff9f2;
 }
+/* Scroll Layout - UPDATED */
+.products-scroll-container {
+  overflow: hidden;
+  position: relative;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.products-scroll-track {
+  display: flex;
+  gap: 2rem;
+  animation: scroll-horizontal 4s linear infinite;
+  width: max-content;
+}
+
+@keyframes scroll-horizontal {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% )); }
+}
+
+.products-scroll-container:hover .products-scroll-track {
+  animation-play-state: paused;
+}
+
+/* Make scroll cards wider and consistent */
+.products-scroll-track .product-card {
+  min-width: 280px;
+  flex-shrink: 0;
+  height: 100%;
+}
 
 /* Section Headers */
 .section-header {

@@ -1,6 +1,6 @@
-import React from 'react';
-import type { HomeContent } from '../types/HomeContent';
-import '../css/HeroBanner.css';
+import React from "react";
+import type { HomeContent } from "../types/HomeContent";
+import "../css/HeroBanner.css";
 
 interface HeroBannerProps {
   content: HomeContent;
@@ -14,9 +14,9 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ content }) => {
     imageUrl,
     videoUrl,
     buttonText,
-    buttonLink
+    buttonLink,
   } = content;
- console.log('Button text:', buttonText);
+
   return (
     <section className="hero-banner">
       <div className="container">
@@ -25,18 +25,21 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ content }) => {
             {subtitle && <p className="hero-subtitle">{subtitle}</p>}
             {title && <h1 className="hero-title">{title}</h1>}
             {description && <p className="hero-description">{description}</p>}
-           {buttonText ? (
-  <button 
-    className="hero-btn"
-    onClick={() => buttonLink && window.open(buttonLink, '_self')}
-  >
-    {buttonText}
-  </button>
-) : (
-  <button className="hero-btn" onClick={() => window.open('/discover', '_self')}>
-    Shop Now
-  </button>
-)}
+            {buttonText ? (
+              <button
+                className="hero-btn"
+                onClick={() => buttonLink && window.open(buttonLink, "_self")}
+              >
+                {buttonText}
+              </button>
+            ) : (
+              <button
+                className="hero-btn"
+                onClick={() => window.open("/discover", "_self")}
+              >
+                Shop Now
+              </button>
+            )}
           </div>
           <div className="hero-media">
             {videoUrl ? (
@@ -44,7 +47,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ content }) => {
                 <source src={videoUrl} type="video/mp4" />
               </video>
             ) : imageUrl ? (
-              <img src={imageUrl} alt={title || 'Hero Banner'} />
+              <img src={imageUrl} alt={title || "Hero Banner"} />
             ) : (
               <div className="placeholder">No media</div>
             )}

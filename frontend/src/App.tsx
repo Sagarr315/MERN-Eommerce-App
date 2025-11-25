@@ -4,8 +4,6 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import UserDashboard from "./pages/user/UserDashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
@@ -35,7 +33,8 @@ import NewArrivalPage from "./pages/NewArrivalPage";
 import TrendingPage from "./pages/TrendingPage";
 import SalePage from "./pages/SalePage";
 import SeasonalPage from "./pages/SeasonalPage";
-
+import Profile from "./pages/user/Profile";
+import AdminProfile from "./pages/admin/AdminProfile";
 function App() {
   return (
     <>
@@ -60,7 +59,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route path="/discover" element={<Discover />} />
           <Route path="/sarees" element={<Sarees />} />
           <Route path="/kids" element={<Kids />} />
@@ -69,21 +67,23 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
-
           {/* User-only routes */}
-          <Route
-            path="/user"
-            element={
-              <UserRoute>
-                <UserDashboard />
-              </UserRoute>
-            }
-          />
+
           <Route
             path="/cart"
             element={
               <UserRoute>
                 <CartPage />
+              </UserRoute>
+            }
+          />
+
+          {/* User Profile Route */}
+          <Route
+            path="/profile"
+            element={
+              <UserRoute>
+                <Profile />
               </UserRoute>
             }
           />
@@ -111,21 +111,14 @@ function App() {
               </UserRoute>
             }
           />
-          <Route
-            path="/user"
-            element={
-              <UserRoute>
-                <UserDashboard />
-              </UserRoute>
-            }
-          />
 
           {/* Admin-only routes */}
+
           <Route
-            path="/admin"
+            path="/admin/profile"
             element={
               <AdminRoute>
-                <AdminDashboard />
+                <AdminProfile />
               </AdminRoute>
             }
           />
@@ -177,7 +170,6 @@ function App() {
               </AdminRoute>
             }
           />
-
           <Route
             path="/admin/AdminHomeContent"
             element={
@@ -186,13 +178,11 @@ function App() {
               </AdminRoute>
             }
           />
-
           <Route path="/latest" element={<LatestPage />} />
           <Route path="/new-arrival" element={<NewArrivalPage />} />
           <Route path="/trending" element={<TrendingPage />} />
           <Route path="/sale" element={<SalePage />} />
           <Route path="/seasonal" element={<SeasonalPage />} />
-
           <Route path="/category/:categoryId" element={<CategoryPage />} />
         </Routes>
         <Footer />

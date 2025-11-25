@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaSpinner } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import "../../css/UserNavbar.css";
 import LogoutButton from "../../components/LogoutButton";
@@ -12,13 +12,16 @@ const UserNavbar = () => {
   const [showAccount, setShowAccount] = useState(false);
   const [mainCategories, setMainCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const navigate = useNavigate();
 
   // Define which categories have dedicated pages
   const dedicatedPages: { [key: string]: string } = {
-    'saree': '/sarees',
-    'kids': '/kids', 
-    'accessories': '/accessories'
+    saree: "/sarees",
+    kids: "/kids",
+    accessories: "/accessories",
   };
 
   const fetchMainCategories = async () => {
@@ -26,7 +29,9 @@ const UserNavbar = () => {
       setLoadingCategories(true);
       const res = await axiosInstance.get("/categories");
       // Filter only main categories (parentCategory is null)
-      const mainCats = res.data.filter((category: any) => !category.parentCategory && category.isActive);
+      const mainCats = res.data.filter(
+        (category: any) => !category.parentCategory && category.isActive
+      );
       setMainCategories(mainCats);
     } catch (err) {
       console.error("Failed to fetch categories");
@@ -38,7 +43,7 @@ const UserNavbar = () => {
   // Handle category click - navigate to appropriate page
   const handleCategoryClick = (category: any) => {
     const categoryNameLower = category.name.toLowerCase();
-    
+
     // Check if category has a dedicated page
     if (dedicatedPages[categoryNameLower]) {
       navigate(dedicatedPages[categoryNameLower]);
@@ -46,8 +51,49 @@ const UserNavbar = () => {
       // Use dynamic category page
       navigate(`/category/${category._id}`);
     }
-    
+
     setShowCategories(false); // Close dropdown after click
+  };
+
+  // Search products
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const response = await axiosInstance.get(
+        `/products?search=${encodeURIComponent(query)}&limit=8`
+      );
+      setSearchResults(response.data.products || []);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery) {
+        handleSearch(searchQuery);
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleProductClick = (productId: string) => {
+    navigate(`/products/${productId}`);
+    setShowSearch(false);
+    setSearchQuery("");
+    setSearchResults([]);
   };
 
   useEffect(() => {
@@ -65,7 +111,7 @@ const UserNavbar = () => {
               className="navbar-brand fw-bold d-flex align-items-center"
             >
               <img src="/letter-s.png" alt="logo" className="logo-img" />
-              <span className="logo-text">amruddhi</span>
+              <span className="logo-text">aGaR</span>
             </Link>
           </div>
 
@@ -93,10 +139,10 @@ const UserNavbar = () => {
                   ) : (
                     <ul className="list-unstyled mb-0">
                       {mainCategories.map((category: any) => (
-                        <li 
-                          key={category._id} 
+                        <li
+                          key={category._id}
                           className="mb-3 cursor-pointer"
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                           onClick={() => handleCategoryClick(category)}
                         >
                           <strong>{category.name}</strong>
@@ -163,10 +209,10 @@ const UserNavbar = () => {
                 ) : (
                   <ul className="list-unstyled mb-0">
                     {mainCategories.map((category: any) => (
-                      <li 
-                        key={category._id} 
+                      <li
+                        key={category._id}
                         className="mb-3 cursor-pointer"
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: "pointer" }}
                         onClick={() => handleCategoryClick(category)}
                       >
                         <strong>{category.name}</strong>
@@ -193,9 +239,6 @@ const UserNavbar = () => {
             <Link to="/cart" className="text-decoration-none text-dark">
               <div className="position-relative">
                 <FaShoppingCart className="fs-5" />
-                <span className="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
-                  2
-                </span>
               </div>
             </Link>
 
@@ -206,12 +249,6 @@ const UserNavbar = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => setShowAccount(!showAccount)}
               >
-                <img
-                  src=""
-                  alt="User"
-                  className="rounded-circle"
-                  style={{ width: "35px", height: "35px" }}
-                />
                 <span className="ms-2 fw-medium d-none d-md-block">
                   My Account
                 </span>
@@ -230,13 +267,13 @@ const UserNavbar = () => {
                   }}
                 >
                   <ul className="list-unstyled mb-0">
-                     <Link
+                    <Link
                       to="/orders"
                       className="text-decoration-none text-dark"
                     >
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-truck me-2"></i> My Orders
-                    </li>
+                      <li className="mb-2 dropdown-item">
+                        <i className="bi bi-truck me-2"></i> My Orders
+                      </li>
                     </Link>
                     <Link
                       to="/wishlist"
@@ -247,23 +284,15 @@ const UserNavbar = () => {
                       </li>
                     </Link>
                     <hr />
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-person me-2"></i> Account
-                    </li>
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-gear me-2"></i> Settings
-                    </li>
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-shield-lock me-2"></i> Privacy
-                    </li>
+                    <Link
+                      to="/profile"
+                      className="text-decoration-none text-dark"
+                    >
+                      <li className="mb-2 dropdown-item">
+                        <i className="bi bi-person me-2"></i> Account
+                      </li>
+                    </Link>
 
-                    <hr />
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-book me-2"></i> Help Guide
-                    </li>
-                    <li className="mb-2 dropdown-item">
-                      <i className="bi bi-question-circle me-2"></i> Help Center
-                    </li>
                     <hr />
                     <LogoutButton />
                   </ul>
@@ -297,10 +326,10 @@ const UserNavbar = () => {
                 ) : (
                   <ul className="list-unstyled mb-0">
                     {mainCategories.map((category: any) => (
-                      <li 
-                        key={category._id} 
+                      <li
+                        key={category._id}
                         className="mb-3 cursor-pointer"
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: "pointer" }}
                         onClick={() => handleCategoryClick(category)}
                       >
                         <strong>{category.name}</strong>
@@ -322,35 +351,109 @@ const UserNavbar = () => {
 
       {/* Search Overlay */}
       {showSearch && (
-        <div className="mobile search-overlay ">
-          <div className="search-box bg-white p-4 rounded shadow-lg">
-            <div className="d-flex align-items-center mb-3">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search in all categories..."
-              />
-              <button className="btn btn-primary ms-2">Search</button>
-              <button
-                className="btn btn-light ms-2"
-                onClick={() => setShowSearch(false)}
-              >
-                ✕
-              </button>
+        <div className="search-overlay active">
+          <div className="search-container">
+            <div className="search-header">
+              <div className="search-input-group">
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Search products and categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                {searchLoading && <FaSpinner className="search-spinner" />}
+                <button
+                  className="search-close"
+                  onClick={() => setShowSearch(false)}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
-            <div>
-              <h6>Suggested results</h6>
-              <ul className="list-unstyled">
-                <li>Apple iMac 2024 (All-in-One PC)</li>
-                <li>Samsung Galaxy S24 Ultra (1Tb, Titanium Violet)</li>
-                <li>MacBook Pro 14-inch M3 - Space Gray</li>
-              </ul>
-              <h6>History</h6>
-              <ul className="list-unstyled">
-                <li>Microsoft - Surface Laptop, 256 GB SSD</li>
-                <li>Huawei - P40 Lite - Smartphone 128GB</li>
-              </ul>
+            <div className="search-results">
+              {searchQuery && (
+                <>
+                  {searchLoading ? (
+                    <div className="search-loading">
+                      <FaSpinner className="spinner" />
+                      <span>Searching...</span>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <>
+                      <div className="search-results-header">
+                        <h6>Search Results ({searchResults.length})</h6>
+                      </div>
+                      <div className="search-results-list">
+                        {searchResults.map((product) => (
+                          <div
+                            key={product._id}
+                            className="search-result-item"
+                            onClick={() => handleProductClick(product._id)}
+                          >
+                            <img
+                              src={
+                                product.images?.[0] || "/images/placeholder.jpg"
+                              }
+                              alt={product.title}
+                              className="search-result-image"
+                            />
+                            <div className="search-result-info">
+                              <div className="search-result-title">
+                                {product.title}
+                              </div>
+                              <div className="search-result-price">
+                                ₹{product.price?.toLocaleString()}
+                              </div>
+                              <div className="search-result-category">
+                                {product.category?.name}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="search-no-results">
+                      No products found for "{searchQuery}"
+                    </div>
+                  )}
+                </>
+              )}
+
+              {!searchQuery && (
+                <div className="search-suggestions">
+                  <h6>Popular Searches</h6>
+                  <div className="suggestion-tags">
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("saree")}
+                    >
+                      Saree
+                    </span>
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("kids")}
+                    >
+                      Kids Wear
+                    </span>
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("accessories")}
+                    >
+                      Accessories
+                    </span>
+                    <span
+                      className="suggestion-tag"
+                      onClick={() => setSearchQuery("dress")}
+                    >
+                      Dress
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -12,18 +12,17 @@ const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // ⭐ Type safety: if context missing
+  //  Type safety: if context missing
   if (!auth) return null;
 
   const { login, token, user, loading: authLoading } = auth;
 
-  // ⭐ auto redirect if logged-in user tries to open /login
+  //  auto redirect if logged-in user tries to open /login
   useEffect(() => {
     if (authLoading) return;
 
     if (token && user) {
-      if (user.role === "admin") navigate("/admin");
-      else navigate("/user");
+      navigate("/"); //  Changed: Everyone goes to home page
     }
   }, [token, user, authLoading, navigate]);
 
@@ -48,9 +47,8 @@ const Login = () => {
       if (result.token && result.user) {
         login(result.token, result.user);
 
-        // Redirect based on role
-        if (result.user.role === "admin") navigate("/admin");
-        else navigate("/user");
+        //  Changed: Redirect to home page for everyone
+        navigate("/");
       } else {
         alert("Invalid login details!");
       }
@@ -65,7 +63,6 @@ const Login = () => {
   return (
     <section className="login-section min-vh-100 d-flex align-items-center overflow-hidden">
       <div className="d-flex w-100 flex-column flex-md-row p-5 bg-light">
-        
         {/* LEFT SIDE */}
         <div className="left-side d-none d-md-flex flex-column justify-content-between m-4 w-50">
           <div>
@@ -90,8 +87,10 @@ const Login = () => {
                   style={{ display: "block", transform: "rotate(25deg)" }}
                   alt="Samruddhi logo"
                 />
-                <span style={{ marginLeft: "-12px", transform: "translateY(-2px)" }}>
-                  amruddhi
+                <span
+                  style={{ marginLeft: "-12px", transform: "translateY(-2px)" }}
+                >
+                  aGaR
                 </span>
               </span>
             </a>
@@ -106,7 +105,8 @@ const Login = () => {
                     <FaCheckCircle /> Trendy Styles, Every Season
                   </h5>
                   <p className="text-muted mb-0">
-                    Stay ahead with our latest collections — curated for every occasion and mood.
+                    Stay ahead with our latest collections — curated for every
+                    occasion and mood.
                   </p>
                 </li>
                 <li className="mb-4">
@@ -114,7 +114,8 @@ const Login = () => {
                     <FaCheckCircle /> Quality You Can Feel
                   </h5>
                   <p className="text-muted mb-0">
-                    From fabric to finish, every piece is crafted with care for lasting comfort.
+                    From fabric to finish, every piece is crafted with care for
+                    lasting comfort.
                   </p>
                 </li>
                 <li>
@@ -144,7 +145,10 @@ const Login = () => {
 
         {/* RIGHT SIDE LOGIN CARD */}
         <div className="right-side d-flex align-items-center justify-content-center w-100 m-0">
-          <div className="card shadow-lg rounded-4" style={{ maxWidth: "420px", width: "100%" }}>
+          <div
+            className="card shadow-lg rounded-4"
+            style={{ maxWidth: "420px", width: "100%" }}
+          >
             <div className="card-body p-5">
               <div className="text-center mb-4">
                 <h2 className="fw-bold">Welcome back</h2>
@@ -199,23 +203,32 @@ const Login = () => {
                 </div>
 
                 <div className="d-flex justify-content-end mb-4">
-                  <a href="/forgot" className="small text-primary text-decoration-none">
+                  <a
+                    href="/forgot"
+                    className="small text-primary text-decoration-none"
+                  >
                     Forgot password?
                   </a>
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                <button
+                  type="submit"
+                  className="btn btn-primary w-100"
+                  disabled={loading}
+                >
                   {loading ? "Signing in..." : "Sign in"}
                 </button>
 
-                <p className="text-center mt-4 mb-0 small text-muted" style={{ fontFamily: "Inter, sans-serif" }}>
-                  Don’t have an account yet?{" "}
+                <p
+                  className="text-center mt-4 mb-0 small text-muted"
+                  style={{ fontFamily: "Inter, sans-serif" }}
+                >
+                  Don't have an account yet?{" "}
                   <a href="/register" className="text-primary fw-semibold">
                     Sign up
                   </a>
                 </p>
               </form>
-
             </div>
           </div>
         </div>

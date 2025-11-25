@@ -67,7 +67,7 @@ const Register = () => {
                 <span
                   style={{ marginLeft: "-12px", transform: "translateY(-2px)" }}
                 >
-                  amruddhi
+                  aGaR
                 </span>
               </span>
             </a>

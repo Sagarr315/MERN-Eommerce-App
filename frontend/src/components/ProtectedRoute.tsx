@@ -14,28 +14,21 @@ const ProtectedRoute = ({ children, type = "auth" }: ProtectedRouteProps) => {
   // Missing context (should never happen)
   if (!auth) return null;
 
-  const { user, token, loading } = auth;
+  const { token, loading } = auth;
 
-  // ⭐ Prevent shaking / flicker: wait until auth loads
+  //  Prevent shaking / flicker: wait until auth loads
   if (loading) {
     return <div className="spinner-border text-primary" />;
   }
 
-  // ⭐ Guest routes (Login/Register)
+  //  Guest routes (Login/Register)
   if (type === "guest" && token) {
-    const redirectTo = user?.role === "admin" ? "/admin" : "/user";
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to="/" replace />;
   }
 
-  // ⭐ Protected routes (Admin/User pages)
+  //  Protected routes (Admin/User pages)
   if (type === "auth" && !token) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ from: location }}
-      />
-    );
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   return children;
