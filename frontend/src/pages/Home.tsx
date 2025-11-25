@@ -211,27 +211,27 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
         </div>
 
         {layout === "scroll" && (
-  <div className="products-scroll-container">
-    <div className="products-scroll-track">
-      {products.map((product, _index) => (
-        <Link
-          key={product._id}
-          to={`/${type}`}
-          style={{ textDecoration: "none", color: "inherit" }}
-        >
-          <ProductCard
-            product={product}
-            badge={{
-              color: getBadgeColor(type),
-              text: getBadgeText(type),
-            }}
-            animation="slide"
-          />
-        </Link>
-      ))}
-    </div>
-  </div>
-)}
+          <div className="products-scroll-container">
+            <div className="products-scroll-track">
+              {products.map((product, _index) => (
+                <Link
+                  key={product._id}
+                  to={`/${type}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <ProductCard
+                    product={product}
+                    badge={{
+                      color: getBadgeColor(type),
+                      text: getBadgeText(type),
+                    }}
+                    animation="slide"
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {layout === "grid" && (
           <div className="row g-4 justify-content-center">
